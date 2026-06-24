@@ -1,6 +1,6 @@
 # DocDaiWeb 🏥📄
 
-**DocDaiWeb** es una plataforma web inteligente diseñada para transformar documentos médicos físicos y digitales (recetas, estudios clínicos en PDF, imágenes) en historiales clínicos estructurados. Mediante el uso de tecnologías de Reconocimiento Óptico de Caracteres (OCR) e Inteligencia Artificial, la plataforma genera perfiles dinámicos de pacientes con seguimiento automatizado y análisis de riesgos, eliminando la necesidad de captura manual [1, 2].
+**DocDaiWeb** es una plataforma web inteligente diseñada para transformar documentos médicos físicos y digitales (recetas, estudios clínicos en PDF, imágenes) en historiales clínicos estructurados. Mediante el uso de tecnologías de Reconocimiento Óptico de Caracteres (OCR) e Inteligencia Artificial, la plataforma genera perfiles dinámicos de pacientes con seguimiento automatizado y análisis de riesgos, eliminando la necesidad de captura manual 
 
 ## 🚀 Características Principales
 
