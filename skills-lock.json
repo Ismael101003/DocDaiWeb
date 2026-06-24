@@ -6,6 +6,12 @@
       "sourceType": "github",
       "skillPath": "skills/frontend-design/SKILL.md",
       "computedHash": "93f53fd1c0352d3d7ec17b8f73d7351bf76f4821e55d123c9d2abc2c53ba48e4"
+    },
+    "paddleocr-text-recognition": {
+      "source": "aidenwu0209/paddleocr-skills",
+      "sourceType": "github",
+      "skillPath": "skills/paddleocr-text-recognition/SKILL.md",
+      "computedHash": "a1a9357f3f9fa4af7893dc15666dab70eea12daf863a77aaa1b1ca4f7f16b3f9"
     }
   }
 }
