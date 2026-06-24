@@ -3,16 +3,16 @@ import { useAuth } from '@/app/providers/AuthProvider';
 import { homePathForRole, getInitials } from '@/utils/formatters';
 
 const doctorLinks = [
-  { label: 'Dashboard', to: '/doctor' },
-  { label: 'Patients', to: '/doctor/patients' },
-  { label: 'Uploads', to: '/doctor/uploads' },
-  { label: 'AI review', to: '/doctor/review/rec-404' },
+  { label: 'Panel', to: '/doctor' },
+  { label: 'Pacientes', to: '/doctor/patients' },
+  { label: 'Cargas', to: '/doctor/uploads' },
+  { label: 'Revisión IA', to: '/doctor/review/rec-404' },
 ];
 
 const patientLinks = [
-  { label: 'Dashboard', to: '/patient' },
-  { label: 'Records', to: '/patient/records' },
-  { label: 'Profile', to: '/patient/profile' },
+  { label: 'Panel', to: '/patient' },
+  { label: 'Registros', to: '/patient/records' },
+  { label: 'Perfil', to: '/patient/profile' },
 ];
 
 export function Sidebar() {
@@ -33,14 +33,14 @@ export function Sidebar() {
           </div>
           <div>
             <div className="fw-bold">DocDaiWeb</div>
-            <div className="small text-white-50">Clinical OCR workspace</div>
+            <div className="small text-white-50">Espacio de trabajo OCR clínico</div>
           </div>
         </div>
 
         <div className="rounded-4 bg-white bg-opacity-10 p-3 mb-4">
-          <div className="small text-white-50 mb-1">Signed in as</div>
+          <div className="small text-white-50 mb-1">Sesión iniciada como</div>
           <div className="fw-semibold">{user.name}</div>
-          <div className="small text-white-50 text-capitalize">{user.role} portal</div>
+          <div className="small text-white-50 text-capitalize">Portal de {user.role}</div>
         </div>
 
         <nav className="nav nav-pills flex-column gap-2">
@@ -53,9 +53,9 @@ export function Sidebar() {
       </div>
 
       <div className="mt-auto rounded-4 bg-white bg-opacity-10 p-3">
-        <div className="small text-white-50 mb-1">Integration state</div>
-        <div className="fw-semibold">Ready for API connection</div>
-        <div className="small text-white-50">Mock auth and local data are active for now.</div>
+        <div className="small text-white-50 mb-1">Estado de integración</div>
+        <div className="fw-semibold">Listo para conectar la API</div>
+        <div className="small text-white-50">La autenticación simulada y los datos locales siguen activos por ahora.</div>
       </div>
     </aside>
   );

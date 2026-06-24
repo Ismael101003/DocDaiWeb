@@ -3,23 +3,23 @@ import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 
 const titleMap: Array<[RegExp, { title: string; subtitle: string }]> = [
-  [/^\/doctor\/patients\/[^/]+$/, { title: 'Patient detail', subtitle: 'Timeline, files, and AI extraction preview' }],
-  [/^\/doctor\/patients$/, { title: 'Patients', subtitle: 'Search and monitor the patient roster' }],
-  [/^\/doctor\/uploads$/, { title: 'Upload documents', subtitle: 'Process scans, PDFs, and photos through OCR' }],
-  [/^\/doctor\/review\/[^/]+$/, { title: 'Medical record review', subtitle: 'Approve or edit extracted clinical data' }],
-  [/^\/doctor$/, { title: 'Doctor dashboard', subtitle: 'Clinical workload, review queue, and patient activity' }],
-  [/^\/patient\/records\/[^/]+$/, { title: 'Record detail', subtitle: 'Readable report view for the patient' }],
-  [/^\/patient\/records$/, { title: 'Medical records', subtitle: 'All structured records in one place' }],
-  [/^\/patient\/profile$/, { title: 'Patient profile', subtitle: 'Personal information and care summary' }],
-  [/^\/patient$/, { title: 'Patient dashboard', subtitle: 'Recent records and current status' }],
+  [/^\/doctor\/patients\/[^/]+$/, { title: 'Detalle del paciente', subtitle: 'Cronología, archivos y vista previa de extracción con IA' }],
+  [/^\/doctor\/patients$/, { title: 'Pacientes', subtitle: 'Busca y supervisa el listado de pacientes' }],
+  [/^\/doctor\/uploads$/, { title: 'Cargar documentos', subtitle: 'Procesa escaneos, PDFs y fotos mediante OCR' }],
+  [/^\/doctor\/review\/[^/]+$/, { title: 'Revisión del expediente', subtitle: 'Aprueba o edita los datos clínicos extraídos' }],
+  [/^\/doctor$/, { title: 'Panel del doctor', subtitle: 'Carga clínica, cola de revisión y actividad de pacientes' }],
+  [/^\/patient\/records\/[^/]+$/, { title: 'Detalle del expediente', subtitle: 'Vista de reporte legible para el paciente' }],
+  [/^\/patient\/records$/, { title: 'Expedientes médicos', subtitle: 'Todos los registros estructurados en un solo lugar' }],
+  [/^\/patient\/profile$/, { title: 'Perfil del paciente', subtitle: 'Información personal y resumen de atención' }],
+  [/^\/patient$/, { title: 'Panel del paciente', subtitle: 'Registros recientes y estado actual' }],
 ];
 
 export function AppLayout() {
   const location = useLocation();
 
   const pageMeta = titleMap.find(([pattern]) => pattern.test(location.pathname))?.[1] ?? {
-    title: 'Clinical workspace',
-    subtitle: 'Structured records and OCR validation',
+    title: 'Espacio clínico',
+    subtitle: 'Registros estructurados y validación OCR',
   };
 
   return (

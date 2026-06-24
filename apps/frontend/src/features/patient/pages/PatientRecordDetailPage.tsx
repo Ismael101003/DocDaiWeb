@@ -12,8 +12,8 @@ export function PatientRecordDetailPage() {
       <div className="card-body p-4 p-xl-5">
         <div className="d-flex flex-wrap justify-content-between gap-3 align-items-start mb-4">
           <div>
-            <h2 className="h4 mb-2">Readable report</h2>
-            <p className="text-secondary mb-0">Human-friendly summary of the record extracted from your chart.</p>
+            <h2 className="h4 mb-2">Informe legible</h2>
+            <p className="text-secondary mb-0">Resumen fácil de leer del registro extraído de tu expediente.</p>
           </div>
           <StatusBadge confidence={record.confidence} />
         </div>
@@ -22,21 +22,21 @@ export function PatientRecordDetailPage() {
           <div className="col-12 col-xl-7">
             <div className="d-grid gap-3">
               <div className="p-3 rounded-4 bg-light">
-                <div className="small text-secondary">Title</div>
+                <div className="small text-secondary">Título</div>
                 <div className="fw-semibold">{record.title}</div>
               </div>
               <div className="p-3 rounded-4 bg-light">
-                <div className="small text-secondary">Recorded on</div>
+                <div className="small text-secondary">Registrado el</div>
                 <div className="fw-semibold">{formatDate(record.date)}</div>
               </div>
               <div className="p-3 rounded-4 bg-light">
-                <div className="small text-secondary">Status</div>
+                <div className="small text-secondary">Estado</div>
                 <div className="fw-semibold text-capitalize">{record.status}</div>
               </div>
 
               <div className="card border-0 bg-light rounded-4">
                 <div className="card-body p-4">
-                  <h3 className="h6 mb-3">What this means</h3>
+                  <h3 className="h6 mb-3">Qué significa</h3>
                   <p className="text-secondary mb-0">{record.summary}</p>
                 </div>
               </div>
@@ -46,7 +46,7 @@ export function PatientRecordDetailPage() {
           <div className="col-12 col-xl-5">
             <div className="card border-0 bg-light rounded-4 h-100">
               <div className="card-body p-4">
-                <h3 className="h6 mb-3">Clinical notes</h3>
+                <h3 className="h6 mb-3">Notas clínicas</h3>
                 <div className="d-grid gap-3">
                   {record.details.map((item) => (
                     <div key={item} className="d-flex justify-content-between gap-3 align-items-start p-3 rounded-4 bg-white">

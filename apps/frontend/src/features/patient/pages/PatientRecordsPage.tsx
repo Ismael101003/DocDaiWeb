@@ -7,11 +7,11 @@ export function PatientRecordsPage() {
     <div className="d-grid gap-4">
       <div className="d-flex flex-wrap justify-content-between align-items-end gap-3">
         <div>
-          <h2 className="h4 mb-2">Medical records</h2>
-          <p className="text-secondary mb-0">A clear list of your structured records and document history.</p>
+          <h2 className="h4 mb-2">Expedientes médicos</h2>
+          <p className="text-secondary mb-0">Una lista clara de tus registros estructurados y tu historial de documentos.</p>
         </div>
         <Link to="/patient/profile" className="btn btn-outline-secondary">
-          View profile
+          Ver perfil
         </Link>
       </div>
 

@@ -13,7 +13,7 @@ export interface PatientSummary {
   gender: string;
   condition: string;
   lastVisit: string;
-  status: 'stable' | 'monitoring' | 'review pending';
+  status: 'estable' | 'en seguimiento' | 'pendiente de revisión';
   documents: number;
 }
 
@@ -30,7 +30,7 @@ export interface MedicalDocument {
   fileName: string;
   type: string;
   uploadedAt: string;
-  status: 'processed' | 'pending review' | 'flagged';
+  status: 'procesado' | 'pendiente de revisión' | 'marcado';
   confidence: number;
   summary: string;
 }
@@ -40,7 +40,7 @@ export interface MedicalRecord {
   patientName: string;
   title: string;
   date: string;
-  status: 'finalized' | 'pending review' | 'requires edits';
+  status: 'finalizado' | 'pendiente de revisión' | 'requiere cambios';
   confidence: number;
   source: string;
   summary: string;

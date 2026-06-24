@@ -13,11 +13,11 @@ export function PatientDetailPage() {
     <div className="d-grid gap-4">
       <div className="d-flex flex-wrap justify-content-between align-items-end gap-3">
         <div>
-          <h2 className="h4 mb-2">Patient detail</h2>
-          <p className="text-secondary mb-0">Timeline, uploads, and AI-extracted data for the selected chart.</p>
+          <h2 className="h4 mb-2">Detalle del paciente</h2>
+          <p className="text-secondary mb-0">Cronología, cargas y datos extraídos por IA para el expediente seleccionado.</p>
         </div>
         <Link to="/doctor/patients" className="btn btn-outline-secondary">
-          Back to list
+          Volver a la lista
         </Link>
       </div>
 
@@ -31,7 +31,7 @@ export function PatientDetailPage() {
         <div className="col-12 col-xl-5 d-grid gap-4">
           <div className="card docdai-surface border-0 rounded-4">
             <div className="card-body p-4 p-xl-5">
-              <h3 className="h5 mb-3">Uploaded documents</h3>
+              <h3 className="h5 mb-3">Documentos cargados</h3>
               <div className="d-grid gap-3">
                 {patientDocuments.map((document) => (
                   <div key={document.id} className="p-3 rounded-4 bg-light">
@@ -53,8 +53,8 @@ export function PatientDetailPage() {
             <div className="card-body p-4 p-xl-5">
               <div className="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
                 <div>
-                  <h3 className="h5 mb-1">AI extracted data</h3>
-                  <p className="text-secondary mb-0">Structured preview before the chart is committed.</p>
+                  <h3 className="h5 mb-1">Datos extraídos por IA</h3>
+                  <p className="text-secondary mb-0">Vista estructurada previa antes de guardar el expediente.</p>
                 </div>
                 <StatusBadge confidence={94} />
               </div>
@@ -66,7 +66,7 @@ export function PatientDetailPage() {
                       <div className="small text-secondary">{field.label}</div>
                       <div className="fw-semibold">{field.value}</div>
                     </div>
-                    <span className={`badge text-bg-${statusTone(field.confidence >= 90 ? 'stable' : 'review pending')}`}>{field.confidence}%</span>
+                    <span className={`badge text-bg-${statusTone(field.confidence >= 90 ? 'estable' : 'pendiente de revisión')}`}>{field.confidence}%</span>
                   </div>
                 ))}
               </div>

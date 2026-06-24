@@ -12,7 +12,7 @@ export function Topbar({ title, subtitle }: TopbarProps) {
 
   const currentDate = useMemo(
     () =>
-      new Intl.DateTimeFormat('en-US', {
+      new Intl.DateTimeFormat('es-ES', {
         weekday: 'short',
         month: 'short',
         day: 'numeric',
@@ -35,14 +35,14 @@ export function Topbar({ title, subtitle }: TopbarProps) {
 
         <div className="d-flex align-items-center gap-3">
           <div className="text-end d-none d-md-block">
-            <div className="small text-secondary">{user.organization ?? 'Patient portal'}</div>
+            <div className="small text-secondary">{user.organization ?? 'Portal del paciente'}</div>
             <div className="fw-semibold">{user.name}</div>
           </div>
           <div className="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary fw-bold" style={{ width: '2.75rem', height: '2.75rem' }}>
             {getInitials(user.name)}
           </div>
           <button type="button" className="btn btn-outline-secondary" onClick={logout}>
-            Sign out
+            Cerrar sesión
           </button>
         </div>
       </div>

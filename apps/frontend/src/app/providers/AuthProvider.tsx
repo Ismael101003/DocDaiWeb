@@ -34,7 +34,7 @@ const buildUser = ({ name, email, role }: AuthCredentials): AuthUser => ({
   name,
   email,
   role,
-  organization: role === 'doctor' ? 'DocDai Medical Network' : undefined,
+  organization: role === 'doctor' ? 'Red médica DocDai' : undefined,
   medicalId: role === 'patient' ? 'PT-2045' : undefined,
 });
 
@@ -89,7 +89,7 @@ export const useAuth = () => {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error('useAuth debe usarse dentro de AuthProvider');
   }
 
   return context;

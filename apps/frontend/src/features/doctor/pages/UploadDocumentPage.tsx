@@ -43,11 +43,11 @@ export function UploadDocumentPage() {
     <div className="d-grid gap-4">
       <div className="d-flex flex-wrap justify-content-between align-items-end gap-3">
         <div>
-          <h2 className="h4 mb-2">Upload document</h2>
-          <p className="text-secondary mb-0">Prepare PDFs or images for OCR, extraction, and review.</p>
+          <h2 className="h4 mb-2">Cargar documento</h2>
+          <p className="text-secondary mb-0">Prepara PDFs o imágenes para OCR, extracción y revisión.</p>
         </div>
         <Link to="/doctor/patients" className="btn btn-outline-secondary">
-          Open patients
+          Abrir pacientes
         </Link>
       </div>
 
@@ -57,24 +57,24 @@ export function UploadDocumentPage() {
         <div className="col-12 col-lg-4">
           <div className="card docdai-surface border-0 rounded-4 h-100">
             <div className="card-body p-4">
-              <div className="fw-semibold mb-2">Processing pipeline</div>
-              <p className="text-secondary mb-0">Upload to OCR to NLP to validation. The workflow pauses when confidence is low.</p>
+              <div className="fw-semibold mb-2">Flujo de procesamiento</div>
+              <p className="text-secondary mb-0">Carga, OCR, NLP y validación. El flujo se pausa cuando la confianza es baja.</p>
             </div>
           </div>
         </div>
         <div className="col-12 col-lg-4">
           <div className="card docdai-surface border-0 rounded-4 h-100">
             <div className="card-body p-4">
-              <div className="fw-semibold mb-2">Supported inputs</div>
-              <p className="text-secondary mb-0">PDF, JPG, PNG, and other image-based records from clinics or patient devices.</p>
+              <div className="fw-semibold mb-2">Entradas compatibles</div>
+              <p className="text-secondary mb-0">PDF, JPG, PNG y otros registros basados en imágenes desde clínicas o dispositivos del paciente.</p>
             </div>
           </div>
         </div>
         <div className="col-12 col-lg-4">
           <div className="card docdai-surface border-0 rounded-4 h-100">
             <div className="card-body p-4">
-              <div className="fw-semibold mb-2">API placeholder</div>
-              <p className="text-secondary mb-0">This screen is wired for a future upload endpoint and progress events.</p>
+              <div className="fw-semibold mb-2">Marcador de API</div>
+              <p className="text-secondary mb-0">Esta pantalla está preparada para un endpoint de carga y eventos de progreso futuros.</p>
             </div>
           </div>
         </div>

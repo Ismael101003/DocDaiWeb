@@ -9,14 +9,14 @@ export function PatientDashboardPage() {
         <div className="card-body p-4 p-xl-5">
           <div className="d-flex flex-wrap justify-content-between gap-3 align-items-start">
             <div>
-              <span className="badge text-bg-primary mb-3">Patient overview</span>
-              <h2 className="h3 mb-2">Your health records, presented in a readable clinical summary.</h2>
+              <span className="badge text-bg-primary mb-3">Resumen del paciente</span>
+              <h2 className="h3 mb-2">Tus registros de salud, presentados en un resumen clínico legible.</h2>
               <p className="text-secondary mb-0">
-                Review recent documents, upcoming actions, and shared notes from your care team.
+                Revisa documentos recientes, acciones próximas y notas compartidas por tu equipo de atención.
               </p>
             </div>
             <Link to="/patient/records" className="btn btn-primary">
-              View records
+              Ver expedientes
             </Link>
           </div>
         </div>
@@ -42,11 +42,11 @@ export function PatientDashboardPage() {
             <div className="card-body p-4 p-xl-5">
               <div className="d-flex justify-content-between align-items-start mb-4">
                 <div>
-                  <h3 className="h5 mb-1">Latest records</h3>
-                  <p className="text-secondary mb-0">Records are presented in language that is easy to scan.</p>
+                  <h3 className="h5 mb-1">Expedientes recientes</h3>
+                  <p className="text-secondary mb-0">Los registros se muestran con un lenguaje fácil de leer de un vistazo.</p>
                 </div>
                 <Link to="/patient/records" className="btn btn-outline-primary btn-sm">
-                  Open all
+                  Abrir todos
                 </Link>
               </div>
 
@@ -71,17 +71,17 @@ export function PatientDashboardPage() {
         <div className="col-12 col-xl-5">
           <div className="card docdai-surface border-0 rounded-4 h-100">
             <div className="card-body p-4 p-xl-5">
-              <h3 className="h5 mb-3">Personal snapshot</h3>
+              <h3 className="h5 mb-3">Resumen personal</h3>
               <div className="p-3 rounded-4 bg-light mb-3">
-                <div className="small text-secondary mb-1">Patient</div>
+                <div className="small text-secondary mb-1">Paciente</div>
                 <div className="fw-semibold">{patientProfile.fullName}</div>
                 <div className="text-secondary">ID {patientProfile.patientId}</div>
               </div>
               <div className="d-grid gap-3 small">
-                <div className="d-flex justify-content-between gap-3"><span className="text-secondary">Blood type</span><span className="fw-semibold">{patientProfile.bloodType}</span></div>
-                <div className="d-flex justify-content-between gap-3"><span className="text-secondary">Allergies</span><span className="fw-semibold text-end">{patientProfile.allergies}</span></div>
-                <div className="d-flex justify-content-between gap-3"><span className="text-secondary">Conditions</span><span className="fw-semibold text-end">{patientProfile.conditions}</span></div>
-                <div className="d-flex justify-content-between gap-3"><span className="text-secondary">Emergency contact</span><span className="fw-semibold text-end">{patientProfile.emergencyContact}</span></div>
+                <div className="d-flex justify-content-between gap-3"><span className="text-secondary">Tipo de sangre</span><span className="fw-semibold">{patientProfile.bloodType}</span></div>
+                <div className="d-flex justify-content-between gap-3"><span className="text-secondary">Alergias</span><span className="fw-semibold text-end">{patientProfile.allergies}</span></div>
+                <div className="d-flex justify-content-between gap-3"><span className="text-secondary">Condiciones</span><span className="fw-semibold text-end">{patientProfile.conditions}</span></div>
+                <div className="d-flex justify-content-between gap-3"><span className="text-secondary">Contacto de emergencia</span><span className="fw-semibold text-end">{patientProfile.emergencyContact}</span></div>
               </div>
             </div>
           </div>

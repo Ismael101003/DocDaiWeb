@@ -1,12 +1,12 @@
 export const formatDate = (value: string) =>
-  new Intl.DateTimeFormat('en-US', {
+  new Intl.DateTimeFormat('es-ES', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   }).format(new Date(value));
 
 export const formatDateTime = (value: string) =>
-  new Intl.DateTimeFormat('en-US', {
+  new Intl.DateTimeFormat('es-ES', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -28,14 +28,20 @@ export const confidenceTone = (confidence: number) => {
   return 'danger';
 };
 
-export const statusTone = (status: string) => {
-  const normalized = status.toLowerCase();
+const normalizeText = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
 
-  if (normalized.includes('final') || normalized.includes('stable') || normalized.includes('processed')) {
+export const statusTone = (status: string) => {
+  const normalized = normalizeText(status);
+
+  if (normalized.includes('final') || normalized.includes('establ') || normalized.includes('procesad')) {
     return 'success';
   }
 
-  if (normalized.includes('pending') || normalized.includes('monitor')) {
+  if (normalized.includes('pendient') || normalized.includes('seguim') || normalized.includes('marcad')) {
     return 'warning';
   }
 
