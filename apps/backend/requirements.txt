@@ -20,3 +20,7 @@ opencv-python-headless>=4.9.0.80
 # --- Utilidades y Base de Datos ---
 python-dotenv>=1.0.1
 httpx>=0.27.0
+
+# --- Base de Datos (PostgreSQL) ---
+asyncpg>=0.29.0
+sqlalchemy>=2.0.25
