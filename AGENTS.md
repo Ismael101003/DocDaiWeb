@@ -11,6 +11,8 @@ Use this workspace as a medical-document processing monorepo. Keep changes align
 ## 🎯 Skills Registry
 **ALWAYS** identify the impacted area and **silently read** the corresponding skill file before proposing solutions or writing code:
 
+- **Backend Python/FastAPI:** 👉 Read `.agents/skills/fastapi-python/SKILL.md`
+- **OCR & Text Recognition:** 👉 Read `.agents/skills/paddleocr-text-recognition/SKILL.md`
 - **Frontend Visual Design (UX/UI):** 👉 Read `.agents/skills/frontend-design/SKILL.md`
 
 *(Agent note: Use additional skills only when the task explicitly matches their scope. Keep documentation links short and avoid duplicating content that already lives in the README or skill files).*
@@ -27,4 +29,3 @@ Ensure to autonomously verify the following points before concluding the task or
 - [ ] Patient and clinical data privacy has not been compromised.
 - [ ] Human-in-the-loop validation for OCR remains intact (no auto-approvals).
 - [ ] The appropriate frontend design skill was consulted for UI work, preserving the existing design language.
-¿Por qué esta versión es superior?

@@ -31,3 +31,8 @@ def root():
 def health_check():
     """Endpoint para verificar el estado del servidor y contratos de infraestructura"""
     return HealthCheckResponse(status="healthy", version="1.0.0")
+
+@app.get("/medicos")
+def get_medicos():
+    """Endpoint para obtener la lista de médicos"""
+    return {"medicos": ["Dr. Juan Pérez", "Dra. María López", "Dr. Carlos García"]}

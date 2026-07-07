@@ -1,67 +1,106 @@
-#agentes
+# ==========================================
+# Agentes y Herramientas Locales
+# ==========================================
 .agents/
+AGENTS.md
 .skills-lock.json
-# Node
+
+# ==========================================
+# Node.js & Gestores de Paquetes
+# ==========================================
 node_modules/
+/node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
+.pnpm-store/
 
-# Build outputs
+# ==========================================
+# Compilación y Salidas (Build Outputs)
+# ==========================================
 dist/
 build/
 out/
-
-# Next.js / Vite / other bundlers
 .next/
 .vite/
+.nuxt/
 .parcel-cache/
+.turbo/
+.vercel/
+.netlify/
 
-# Logs
+# ==========================================
+# Logs y Archivos de Sistema/Runtime
+# ==========================================
 logs/
 *.log
-
-# Runtime files
 pids/
 *.pid
 *.seed
 *.pid.lock
 
-# Environment files
+# ==========================================
+# Variables de Entorno (¡Seguridad!)
+# ==========================================
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
 .env.*.local
+# Ignorar todos los .env excepto los de ejemplo/plantilla
+.env.*
+!.env.example
+!.env.template
 
+# ==========================================
 # Python
+# ==========================================
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
+env/
 venv/
 .venv/
-env/
+ENV/
+.pytest_cache/
+.coverage
+htmlcov/
 
-# IDEs and editors
-.vscode/
+# ==========================================
+# IDEs, Editores y OS
+# ==========================================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
 .idea/
 *.suo
-
-# OS files
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Testing / coverage
+# ==========================================
+# Pruebas (Testing) y Cobertura
+# ==========================================
 coverage/
 .nyc_output/
-.coverage
 coverage.json
-pytest_cache/
 
-# Databases
+# ==========================================
+# Bases de Datos y Caché
+# ==========================================
 *.sqlite3
 *.db
-
-# Misc
 .cache/
 .sass-cache/
-.turbo/
+.eslintcache
+.prettiercache
