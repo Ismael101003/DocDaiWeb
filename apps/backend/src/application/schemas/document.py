@@ -1,5 +1,11 @@
-from pydantic import BaseModel
+"""Contratos de aplicación para la recepción de documentos."""
 
-class UploadResponse(BaseModel):
-    filename: str
-    message: str
+from pydantic import BaseModel, Field
+
+
+class DocumentUploadResponse(BaseModel):
+    """Confirmación de una solicitud de recepción sin persistencia."""
+
+    filename: str = Field(min_length=1)
+    status: str = "pending_storage"
+    detail: str
