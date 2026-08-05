@@ -4,8 +4,9 @@ from pydantic import BaseModel, Field
 
 
 class DocumentUploadResponse(BaseModel):
-    """Confirmación de una solicitud de recepción sin persistencia."""
+    """Confirmación de un documento validado y almacenado temporalmente."""
 
+    document_id: str = Field(min_length=1)
     filename: str = Field(min_length=1)
-    status: str = "pending_storage"
+    status: str = "stored"
     detail: str
