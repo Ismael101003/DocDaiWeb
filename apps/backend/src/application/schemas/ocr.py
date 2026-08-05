@@ -17,3 +17,14 @@ class OcrProcessingResponse(BaseModel):
     document_id: UUID
     status: str = "pending_human_review"
     detail: str
+
+
+class OcrExtractionResponse(BaseModel):
+    """Resultado no persistido de OCR sobre un documento preparado."""
+
+    document_id: str
+    status: str = "processed"
+    pages: int
+    text: str
+    confidence: float
+    processing_time: float

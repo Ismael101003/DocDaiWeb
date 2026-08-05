@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 
 from src.application.schemas.common import ErrorResponse
 from src.application.schemas.document import DocumentUploadResponse, PreparedDocumentResponse
+from src.application.schemas.ocr import OcrExtractionResponse
 from src.application.services.document_upload_validator import (
     DocumentUploadValidator,
     InvalidDocumentUploadError,
@@ -13,10 +14,16 @@ from src.application.use_cases.prepare_document import (
     DocumentNotFoundError,
     PrepareDocumentUseCase,
 )
+from src.application.use_cases.extract_text import (
+    DocumentNotFoundError as OcrDocumentNotFoundError,
+    DocumentNotPreparedError,
+    ExtractTextUseCase,
+)
 from src.domain.interfaces.document_processor import (
     InvalidDocumentError,
     UnsupportedDocumentError,
 )
+from src.domain.interfaces.ocr_provider import OcrEngineError
 from src.infrastructure.config.document_storage import (
     get_max_upload_size_bytes,
     get_prepared_storage_directory,
@@ -26,6 +33,10 @@ from src.infrastructure.ocr.document_preparation_processor import (
 )
 from src.infrastructure.ocr.image_processor import ImageProcessor
 from src.infrastructure.ocr.pdf_processor import PdfProcessor
+from src.infrastructure.ocr.paddle_provider import PaddleOcrProvider
+from src.infrastructure.storage.local_prepared_document_storage import (
+    LocalPreparedDocumentStorage,
+)
 from src.infrastructure.storage.local_temporary_document_storage import (
     LocalTemporaryDocumentStorage,
 )
@@ -52,6 +63,15 @@ def get_prepare_document_use_case() -> PrepareDocumentUseCase:
             image_processor=image_processor,
             prepared_storage_directory=get_prepared_storage_directory(),
         ),
+    )
+
+
+def get_extract_text_use_case() -> ExtractTextUseCase:
+    """Compone el caso de uso OCR con el adaptador PaddleOCR local."""
+    return ExtractTextUseCase(
+        document_storage=LocalTemporaryDocumentStorage(),
+        prepared_storage=LocalPreparedDocumentStorage(),
+        ocr_provider=PaddleOcrProvider(),
     )
 
 
@@ -146,4 +166,51 @@ async def prepare_document(
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(exc),
+        ) from exc
+
+
+@router.post(
+    "/{document_id}/ocr",
+    response_model=OcrExtractionResponse,
+    summary="Extrae texto OCR de un documento preparado",
+    description=(
+        "Ejecuta PaddleOCR sobre las imágenes ya preparadas. El resultado no se "
+        "persiste ni se aprueba automáticamente; requiere revisión humana posterior."
+    ),
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "model": ErrorResponse,
+            "description": "El documento temporal no existe.",
+        },
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "model": ErrorResponse,
+            "description": "El documento no ha sido preparado para OCR.",
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ErrorResponse,
+            "description": "El motor OCR no pudo procesar el documento.",
+        },
+    },
+)
+async def extract_document_text(
+    document_id: str,
+    use_case: ExtractTextUseCase = Depends(get_extract_text_use_case),
+) -> OcrExtractionResponse:
+    """Delega el OCR al caso de uso sin incluir lógica del motor en la ruta."""
+    try:
+        result = use_case.execute(document_id=document_id)
+        if not isinstance(result, OcrExtractionResponse):
+            raise RuntimeError("El caso de uso OCR devolvió un resultado inválido.")
+        return result
+    except OcrDocumentNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except DocumentNotPreparedError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(exc),
+        ) from exc
+    except OcrEngineError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="El motor OCR no pudo procesar el documento.",
         ) from exc
