@@ -21,3 +21,16 @@ class LocalTemporaryDocumentStorage:
         stored_file_path.write_bytes(content)
 
         return stored_filename
+
+    def get_path(self, *, document_id: str) -> Path:
+        """Obtiene un archivo temporal sin permitir salir del directorio configurado."""
+        storage_directory = get_temp_storage_directory().resolve()
+        document_path = (storage_directory / document_id).resolve()
+
+        if document_path.parent != storage_directory:
+            raise FileNotFoundError(document_id)
+
+        if not document_path.is_file():
+            raise FileNotFoundError(document_id)
+
+        return document_path

@@ -18,6 +18,11 @@ def get_temp_storage_directory() -> Path:
     return Path(tempfile.gettempdir()) / "docdaiweb" / "uploads"
 
 
+def get_prepared_storage_directory() -> Path:
+    """Obtiene el directorio temporal de imágenes preparadas para OCR."""
+    return get_temp_storage_directory().parent / "prepared"
+
+
 def get_max_upload_size_bytes() -> int:
     """Obtiene el límite máximo permitido para un archivo cargado."""
     configured_size = os.getenv("DOCDIA_MAX_UPLOAD_SIZE_BYTES")

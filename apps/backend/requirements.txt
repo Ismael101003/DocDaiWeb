@@ -18,6 +18,8 @@ langchain-openai>=0.1.1
 paddleocr>=2.7.3
 paddlepaddle>=2.6.0; sys_platform != 'darwin'  
 opencv-python-headless>=4.9.0.80               
+Pillow>=10.0.0
+PyMuPDF>=1.24.0
 
 # --- Utilidades y base de datos ---
 python-dotenv>=1.0.1
