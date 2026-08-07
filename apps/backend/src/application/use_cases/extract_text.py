@@ -8,6 +8,7 @@ from src.application.schemas.ocr import (
     OcrProcessingResponse,
 )
 from src.domain.interfaces.ocr_provider import OcrProvider
+from src.domain.interfaces.ocr_result_storage import OcrResultStorage
 from src.domain.interfaces.prepared_document_storage import PreparedDocumentStorage
 from src.domain.interfaces.temporary_document_storage import TemporaryDocumentStorage
 
@@ -29,10 +30,12 @@ class ExtractTextUseCase:
         document_storage: TemporaryDocumentStorage | None = None,
         prepared_storage: PreparedDocumentStorage | None = None,
         ocr_provider: OcrProvider | None = None,
+        ocr_result_storage: OcrResultStorage | None = None,
     ) -> None:
         self._document_storage = document_storage
         self._prepared_storage = prepared_storage
         self._ocr_provider = ocr_provider
+        self._ocr_result_storage = ocr_result_storage
 
     def execute(
         self,
@@ -74,10 +77,13 @@ class ExtractTextUseCase:
             for confidence in page_result.confidences
         ]
 
-        return OcrExtractionResponse(
+        result = OcrExtractionResponse(
             document_id=document_id,
             pages=len(page_results),
             text="\n".join(page_result.text for page_result in page_results if page_result.text),
             confidence=round(sum(confidences) / len(confidences), 4) if confidences else 0.0,
             processing_time=round(processing_time, 4),
         )
+        if self._ocr_result_storage is not None:
+            self._ocr_result_storage.save(document_id=document_id, text=result.text)
+        return result

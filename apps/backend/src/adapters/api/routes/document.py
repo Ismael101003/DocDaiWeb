@@ -5,6 +5,8 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from src.application.schemas.common import ErrorResponse
 from src.application.schemas.document import DocumentUploadResponse, PreparedDocumentResponse
 from src.application.schemas.ocr import OcrExtractionResponse
+from src.application.schemas.medical_information import MedicalInformationResponse
+from src.application.services.medical_information_parser import MedicalInformationParser
 from src.application.services.document_upload_validator import (
     DocumentUploadValidator,
     InvalidDocumentUploadError,
@@ -18,6 +20,10 @@ from src.application.use_cases.extract_text import (
     DocumentNotFoundError as OcrDocumentNotFoundError,
     DocumentNotPreparedError,
     ExtractTextUseCase,
+)
+from src.application.use_cases.parse_medical_information import (
+    OcrResultNotAvailableError,
+    ParseMedicalInformationUseCase,
 )
 from src.domain.interfaces.document_processor import (
     InvalidDocumentError,
@@ -40,8 +46,10 @@ from src.infrastructure.storage.local_prepared_document_storage import (
 from src.infrastructure.storage.local_temporary_document_storage import (
     LocalTemporaryDocumentStorage,
 )
+from src.infrastructure.storage.in_memory_ocr_result_storage import InMemoryOcrResultStorage
 
 router = APIRouter()
+_ocr_result_storage = InMemoryOcrResultStorage()
 
 
 def get_request_document_upload_use_case() -> RequestDocumentUploadUseCase:
@@ -72,6 +80,15 @@ def get_extract_text_use_case() -> ExtractTextUseCase:
         document_storage=LocalTemporaryDocumentStorage(),
         prepared_storage=LocalPreparedDocumentStorage(),
         ocr_provider=PaddleOcrProvider(),
+        ocr_result_storage=_ocr_result_storage,
+    )
+
+
+def get_parse_medical_information_use_case() -> ParseMedicalInformationUseCase:
+    """Compone el parser puro con el resultado OCR temporal ya disponible."""
+    return ParseMedicalInformationUseCase(
+        parser=MedicalInformationParser(),
+        ocr_result_storage=_ocr_result_storage,
     )
 
 
@@ -214,3 +231,29 @@ async def extract_document_text(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="El motor OCR no pudo procesar el documento.",
         ) from exc
+
+
+@router.post(
+    "/{document_id}/parse",
+    response_model=MedicalInformationResponse,
+    summary="Convierte texto OCR existente en información médica estructurada",
+    description=(
+        "Usa exclusivamente el resultado OCR temporal de una solicitud previa. No ejecuta OCR, "
+        "no persiste información y todos los valores requieren validación humana."
+    ),
+    responses={
+        status.HTTP_409_CONFLICT: {
+            "model": ErrorResponse,
+            "description": "No existe un resultado OCR temporal para el documento.",
+        },
+    },
+)
+async def parse_medical_information(
+    document_id: str,
+    use_case: ParseMedicalInformationUseCase = Depends(get_parse_medical_information_use_case),
+) -> MedicalInformationResponse:
+    """Entrega extracción determinista y no aprobada, sin modificar el documento."""
+    try:
+        return use_case.execute(document_id=document_id)
+    except OcrResultNotAvailableError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
