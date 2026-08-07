@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 
 from src.adapters.api.router import api_router
 from src.application.schemas.common import ErrorResponse, ServiceInfoResponse
+from src.core.logging import setup_logging
 
 APP_VERSION = "0.1.0"
 logger = logging.getLogger(__name__)
@@ -19,7 +20,10 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     """Gestiona recursos de la aplicación sin iniciar servicios externos todavía."""
+    setup_logging()
+    logger.info("Aplicación DocDaiWeb iniciada", extra={"version": APP_VERSION})
     yield
+    logger.info("Aplicación DocDaiWeb detenida")
 
 
 app = FastAPI(

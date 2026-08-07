@@ -2,12 +2,15 @@
 
 from collections.abc import Mapping, Sequence
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
 from paddleocr import PaddleOCR
 
 from src.domain.interfaces.ocr_provider import OcrEngineError, OcrPageResult
+
+logger = logging.getLogger(__name__)
 
 
 class PaddleOcrProvider:
@@ -22,16 +25,22 @@ class PaddleOcrProvider:
         engine = self._get_engine()
         page_results: list[OcrPageResult] = []
 
-        for image_path in images:
+        for page_number, image_path in enumerate(images, start=1):
             try:
+                logger.debug("Procesando página OCR", extra={"page": page_number})
                 raw_results = engine.predict(str(image_path))
                 text, confidences = self._parse_result(list(raw_results))
             except OcrEngineError:
                 raise
             except Exception as exc:
+                logger.exception("Error al procesar página OCR", extra={"page": page_number})
                 raise OcrEngineError("PaddleOCR no pudo procesar una imagen preparada.") from exc
 
             page_results.append(OcrPageResult(text=text, confidences=tuple(confidences)))
+            logger.debug(
+                "Página OCR procesada",
+                extra={"page": page_number, "detected_lines": len(confidences)},
+            )
 
         return page_results
 
@@ -41,6 +50,7 @@ class PaddleOcrProvider:
             return self._engine
 
         try:
+            logger.debug("Inicializando proveedor PaddleOCR", extra={"language": self._language})
             self._engine = PaddleOCR(
                 lang=self._language,
                 use_doc_orientation_classify=False,
@@ -48,8 +58,10 @@ class PaddleOcrProvider:
                 use_textline_orientation=False,
             )
         except Exception as exc:
+            logger.exception("Error al inicializar proveedor PaddleOCR")
             raise OcrEngineError("No fue posible inicializar PaddleOCR.") from exc
 
+        logger.info("Modelo PaddleOCR disponible", extra={"language": self._language})
         return self._engine
 
     def _parse_result(self, results: list[Any]) -> tuple[str, list[float]]:

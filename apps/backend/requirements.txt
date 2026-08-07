@@ -15,8 +15,8 @@ langchain-community>=0.0.34
 langchain-openai>=0.1.1       
 
 # --- Procesamiento documental y visión ---
-paddleocr>=2.7.3
-paddlepaddle>=2.6.0; sys_platform != 'darwin'  
+paddlepaddle==3.2.1
+paddleocr[all]==3.5.0; sys_platform != 'darwin'  
 opencv-python-headless>=4.9.0.80               
 Pillow>=10.0.0
 PyMuPDF>=1.24.0

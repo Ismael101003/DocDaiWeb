@@ -107,7 +107,7 @@ def get_parse_medical_information_use_case() -> ParseMedicalInformationUseCase:
             "model": ErrorResponse,
             "description": "El archivo no cumple las reglas de carga.",
         },
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {
             "model": ErrorResponse,
             "description": "La solicitud multipart es inválida.",
         },
@@ -159,7 +159,7 @@ async def upload_document(
             "model": ErrorResponse,
             "description": "El formato no puede prepararse.",
         },
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {
             "model": ErrorResponse,
             "description": "El documento está corrupto o es inválido.",
         },
@@ -181,7 +181,7 @@ async def prepare_document(
         ) from exc
     except InvalidDocumentError as exc:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=str(exc),
         ) from exc
 
@@ -199,7 +199,7 @@ async def prepare_document(
             "model": ErrorResponse,
             "description": "El documento temporal no existe.",
         },
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {
             "model": ErrorResponse,
             "description": "El documento no ha sido preparado para OCR.",
         },
@@ -223,7 +223,7 @@ async def extract_document_text(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     except DocumentNotPreparedError as exc:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=str(exc),
         ) from exc
     except OcrEngineError as exc:

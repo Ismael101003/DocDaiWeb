@@ -1,8 +1,11 @@
 """Recuperación local de imágenes temporales preparadas para OCR."""
 
+import logging
 from pathlib import Path
 
 from src.infrastructure.config.document_storage import get_prepared_storage_directory
+
+logger = logging.getLogger(__name__)
 
 
 class LocalPreparedDocumentStorage:
@@ -21,4 +24,8 @@ class LocalPreparedDocumentStorage:
         if not image_paths:
             raise FileNotFoundError(document_id)
 
+        logger.debug(
+            "Imágenes preparadas localizadas",
+            extra={"document_id": document_id, "pages": len(image_paths)},
+        )
         return image_paths

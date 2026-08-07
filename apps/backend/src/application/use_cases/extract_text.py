@@ -1,5 +1,6 @@
 """Caso de uso para extraer texto de documentos ya preparados."""
 
+import logging
 from time import perf_counter
 
 from src.application.schemas.ocr import (
@@ -11,6 +12,8 @@ from src.domain.interfaces.ocr_provider import OcrProvider
 from src.domain.interfaces.ocr_result_storage import OcrResultStorage
 from src.domain.interfaces.prepared_document_storage import PreparedDocumentStorage
 from src.domain.interfaces.temporary_document_storage import TemporaryDocumentStorage
+
+logger = logging.getLogger(__name__)
 
 
 class DocumentNotFoundError(Exception):
@@ -53,6 +56,8 @@ class ExtractTextUseCase:
         if document_id is None:
             raise ValueError("Se requiere un identificador de documento.")
 
+        logger.info("Iniciando extracción OCR", extra={"document_id": document_id})
+
         if not all((self._document_storage, self._prepared_storage, self._ocr_provider)):
             raise RuntimeError("Las dependencias de OCR no están configuradas.")
 
@@ -69,7 +74,11 @@ class ExtractTextUseCase:
             ) from exc
 
         started_at = perf_counter()
-        page_results = self._ocr_provider.extract(images=image_paths)
+        try:
+            page_results = self._ocr_provider.extract(images=image_paths)
+        except Exception:
+            logger.exception("Error durante el procesamiento OCR", extra={"document_id": document_id})
+            raise
         processing_time = perf_counter() - started_at
         confidences = [
             confidence
@@ -86,4 +95,14 @@ class ExtractTextUseCase:
         )
         if self._ocr_result_storage is not None:
             self._ocr_result_storage.save(document_id=document_id, text=result.text)
+        logger.info(
+            "OCR completado correctamente",
+            extra={
+                "document_id": document_id,
+                "pages": result.pages,
+                "average_confidence": result.confidence,
+                "duration_seconds": result.processing_time,
+                "status": result.status,
+            },
+        )
         return result

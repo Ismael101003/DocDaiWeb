@@ -1,5 +1,6 @@
 """Adaptador que selecciona el procesador adecuado para cada documento temporal."""
 
+import logging
 from pathlib import Path
 
 from src.domain.interfaces.document_processor import (
@@ -11,6 +12,7 @@ from src.infrastructure.ocr.image_processor import ImageProcessor
 from src.infrastructure.ocr.pdf_processor import PdfProcessor
 
 SUPPORTED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
+logger = logging.getLogger(__name__)
 
 
 class LocalDocumentPreparationProcessor(DocumentProcessor):
@@ -34,6 +36,10 @@ class LocalDocumentPreparationProcessor(DocumentProcessor):
 
         output_directory = self._prepared_storage_directory / document_id
         file_extension = document_path.suffix.lower()
+        logger.debug(
+            "Seleccionando preparación de documento",
+            extra={"document_id": document_id, "file_extension": file_extension},
+        )
 
         if file_extension == ".pdf":
             return self._pdf_processor.prepare(
@@ -44,6 +50,7 @@ class LocalDocumentPreparationProcessor(DocumentProcessor):
 
         if file_extension in SUPPORTED_IMAGE_EXTENSIONS:
             output_path = output_directory / "page_1.png"
+            logger.debug("Procesando página del documento", extra={"document_id": document_id, "page": 1})
             self._image_processor.prepare(
                 source_path=document_path,
                 output_path=output_path,

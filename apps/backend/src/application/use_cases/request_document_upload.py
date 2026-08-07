@@ -1,8 +1,14 @@
 """Caso de uso para validar y almacenar temporalmente documentos."""
 
+import logging
+from pathlib import Path
+from time import perf_counter
+
 from src.application.schemas.document import DocumentUploadResponse
 from src.application.services.document_upload_validator import DocumentUploadValidator
 from src.domain.interfaces.temporary_document_storage import TemporaryDocumentStorage
+
+logger = logging.getLogger(__name__)
 
 
 class RequestDocumentUploadUseCase:
@@ -28,6 +34,12 @@ class RequestDocumentUploadUseCase:
     ) -> DocumentUploadResponse:
         """Valida el documento, lo guarda temporalmente y devuelve su referencia."""
         safe_filename = filename or ""
+        file_extension = Path(safe_filename).suffix.lower() or "sin_extensión"
+        started_at = perf_counter()
+        logger.info(
+            "Iniciando carga de documento",
+            extra={"file_extension": file_extension, "file_size_bytes": len(content)},
+        )
 
         self._validator.validate(
             filename=safe_filename,
@@ -39,6 +51,15 @@ class RequestDocumentUploadUseCase:
         document_id = self._storage.save(
             content=content,
             original_filename=safe_filename,
+        )
+        logger.info(
+            "Documento cargado correctamente",
+            extra={
+                "document_id": document_id,
+                "file_extension": file_extension,
+                "file_size_bytes": len(content),
+                "duration_seconds": round(perf_counter() - started_at, 4),
+            },
         )
 
         return DocumentUploadResponse(
