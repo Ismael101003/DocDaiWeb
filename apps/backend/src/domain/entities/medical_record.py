@@ -25,10 +25,12 @@ class ExtractionEvidence:
     """Referencia auditable a texto OCR; no representa una confianza clínica."""
 
     field: str
+    value: str
     source_text: str
     match_type: str
     page: int | None = None
     confidence: float | None = None
+    status: str = "pending_review"
 
 
 @dataclass(frozen=True)

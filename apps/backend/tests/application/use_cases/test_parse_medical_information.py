@@ -26,6 +26,8 @@ class ParseMedicalInformationUseCaseTest(unittest.TestCase):
         self.assertEqual(response.patient.name if response.patient else None, "Laura Ruiz")
         self.assertEqual(response.patient.age if response.patient else None, 30)
         self.assertEqual(response.evidence[0].field, "patient.name")
+        self.assertEqual(response.evidence[0].value, "Laura Ruiz")
+        self.assertEqual(response.evidence[0].status, "pending_review")
 
     def test_rejects_missing_ocr_result_without_running_ocr(self) -> None:
         with self.assertRaises(OcrResultNotAvailableError):

@@ -56,10 +56,12 @@ class ParseMedicalInformationUseCase:
             evidence=[
                 ExtractionEvidenceResponse(
                     field=evidence.field,
+                    value=evidence.value,
                     source_text=evidence.source_text,
                     match_type=evidence.match_type,
                     page=evidence.page,
                     confidence=evidence.confidence,
+                    status=evidence.status,
                 )
                 for evidence in record.evidence
             ],

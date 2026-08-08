@@ -44,12 +44,17 @@ class ExtractionEvidenceResponse(BaseModel):
     """Evidencia OCR para revisión humana, sin confianza de parser inventada."""
 
     field: str = Field(description="Ruta del campo estructurado que la evidencia respalda.")
+    value: str = Field(description="Valor estructurado propuesto por el parser.")
     source_text: str = Field(description="Texto OCR literal empleado por la regla.")
     match_type: str = Field(description="Tipo de regla determinista aplicada.")
     page: int | None = Field(default=None, description="Página OCR si el origen la proporciona.")
     confidence: float | None = Field(
         default=None,
         description="No se calcula para reglas regex; no equivale a confianza OCR.",
+    )
+    status: str = Field(
+        default="pending_review",
+        description="Estado inicial de la evidencia, siempre pendiente de revisión humana.",
     )
 
 
