@@ -38,6 +38,14 @@ class MedicationResponse(BaseModel):
         description="Frecuencia textual explícita; es nula si no fue encontrada.",
         examples=["Cada 12 horas"],
     )
+    presentation: str | None = Field(
+        default=None,
+        description="Presentación textual explícita, por ejemplo Tabletas o Spray nasal.",
+    )
+    indication: str | None = Field(
+        default=None,
+        description="Indicación textual explícita vinculada al medicamento; no es una recomendación general.",
+    )
 
 
 class ExtractionEvidenceResponse(BaseModel):

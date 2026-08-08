@@ -25,9 +25,14 @@ _DATE_PATTERN = re.compile(
 _DOSE_PATTERN = re.compile(r"\b\d+(?:[.,]\d+)?\s*(?:mg|g|mcg|µg|ug|ml|ui|u\.i\.)\b", re.IGNORECASE)
 _FREQUENCY_PATTERN = re.compile(
     r"\b(?:cada\s+\d+\s*(?:h|hrs?|horas?)|c/\s*\d+\s*(?:h|hrs?|horas?)|"
-    r"\d+\s+ve(?:z|ces)\s+al\s+d[ií]a|diari[ao])\b",
+    r"(?:una|dos)\s+ve(?:z|ces)\s+al\s+d[ií]a|diari[ao]|seg[uú]n\s+(?:necesidad|indicaci[oó]n\s+m[eé]dica))\b",
     re.IGNORECASE,
 )
+_PRESENTATION_PATTERN = re.compile(
+    r"\b(?:tabletas?|c[aá]psulas?|jarabe|gotas?|spray(?:\s+nasal)?|crema|ung[uü]ento|inyecci[oó]n(?:es)?)\b",
+    re.IGNORECASE,
+)
+_INDICATION_PATTERN = re.compile(r"^(?:para|indicado\s+para)\s+.+", re.IGNORECASE)
 
 _STOPWORDS = {"de", "del", "la", "el", "los", "las", "y", "en", "al", "a", "da", "do", "dos", "das"}
 _PERSON_PREFIXES = ("dr", "dra", "doctor", "doctora", "medico", "medica")
@@ -53,7 +58,21 @@ _DIAGNOSIS_LABELS = (
     "diagnosticos",
     "diagnostico",
     "dx",
+)
+_SECTION_TERMINATORS = (
+    "antecedentes y observaciones",
     "antecedentes",
+    "observaciones",
+    "recomendaciones",
+    "aviso legal",
+    "advertencias",
+)
+_NOISE_PATTERNS = (
+    "documento de prueba",
+    "ejemplo ficticio",
+    "sin validez medica",
+    "documento generado exclusivamente para pruebas",
+    "no es una receta real",
 )
 _MEDICATION_LABELS = (
     "medicamentos",
@@ -124,11 +143,13 @@ def _split_label(line: str, labels: tuple[str, ...]) -> str | None:
         normalized_label = _normalize_for_match(label)
         if not normalized_line.startswith(normalized_label):
             continue
-
-        remainder = stripped_line[len(label) :].lstrip()
-        if remainder[:1] in {":", "-", "–", "—"}:
-            remainder = remainder[1:].lstrip()
-        return _clean_value(remainder)
+        remainder = stripped_line[len(label) :]
+        if not remainder:
+            return ""
+        separator = remainder.lstrip()[:1]
+        if separator not in {":", "-", "–", "—"}:
+            continue
+        return _clean_value(remainder.lstrip()[1:])
     return None
 
 
@@ -136,12 +157,9 @@ def _is_known_header(line: str) -> bool:
     normalized_line = _normalize_for_match(line).rstrip(":")
     if not normalized_line:
         return False
-    if normalized_line in {"edad", "sexo", "alergias", "signos vitales"}:
+    if normalized_line in _SECTION_TERMINATORS or normalized_line in {"edad", "sexo", "alergias", "signos vitales"}:
         return True
-    return any(
-        normalized_line == _normalize_for_match(label) or normalized_line.startswith(_normalize_for_match(label))
-        for label in _KNOWN_HEADERS
-    )
+    return _split_label(line, _KNOWN_HEADERS) is not None
 
 
 def _extract_section(lines: list[_LineContext], labels: tuple[str, ...]) -> list[_LineContext]:
@@ -164,6 +182,11 @@ def _extract_section(lines: list[_LineContext], labels: tuple[str, ...]) -> list
             section_lines.append(line)
 
     return section_lines
+
+
+def _is_document_noise(value: str) -> bool:
+    normalized_value = _normalize_for_match(value)
+    return any(pattern in normalized_value for pattern in _NOISE_PATTERNS)
 
 
 def _tokenize(value: str) -> list[str]:
@@ -257,9 +280,32 @@ def _normalize_frequency(value: str) -> str:
     return cleaned_value
 
 
+def _prefer_frequency(current: str | None, candidate: str | None) -> str | None:
+    """Conserva la frecuencia explícita más concreta sin inferir una combinación."""
+    if candidate is None:
+        return current
+    if current is None:
+        return candidate
+    if _normalize_for_match(current).startswith("segun") and not _normalize_for_match(candidate).startswith("segun"):
+        return candidate
+    return current
+
+
 def _is_medication_instruction(line: str) -> bool:
     normalized_line = _normalize_for_match(line)
-    return normalized_line.startswith(("tomar", "tomar ", "administrar", "aplicar", "ingerir", "usar", "dosis", "indicaciones", "indicacion"))
+    return normalized_line.startswith(("tomar", "administrar", "aplicar", "ingerir", "usar", "dosis", "indicaciones", "indicacion", "recomendaciones", "consultar", "mantener", "vigilar"))
+
+
+def _is_medication_name_candidate(value: str) -> bool:
+    if _is_document_noise(value) or _is_medication_instruction(value):
+        return False
+    tokens = _tokenize(value)
+    if not tokens or len(tokens) > 5:
+        return False
+    normalized_value = _normalize_for_match(value)
+    if _FREQUENCY_PATTERN.search(value) or _PRESENTATION_PATTERN.fullmatch(value.strip()):
+        return False
+    return bool(re.fullmatch(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s-]+", value.strip())) and "receta medica" not in normalized_value
 
 
 def extract_medications(lines: list[_LineContext]) -> tuple[Medication, ...]:
@@ -271,39 +317,35 @@ def extract_medications(lines: list[_LineContext]) -> tuple[Medication, ...]:
         if not text:
             continue
 
+        if _is_document_noise(text):
+            continue
         frequency_match = _FREQUENCY_PATTERN.search(text)
         dose_match = _DOSE_PATTERN.search(text)
+        presentation_match = _PRESENTATION_PATTERN.search(text)
+        indication_match = _INDICATION_PATTERN.match(_clean_value(text))
 
-        if _is_medication_instruction(text):
-            if medications and frequency_match is not None:
-                latest = medications[-1]
-                medications[-1] = Medication(
-                    name=latest.name,
-                    dose=latest.dose,
-                    frequency=_normalize_frequency(frequency_match.group(0)),
-                )
-            continue
-
-        name_candidate = text
-        if dose_match is not None:
-            name_candidate = text[: dose_match.start()]
-        if frequency_match is not None:
-            name_candidate = name_candidate[: frequency_match.start()] if frequency_match.start() < len(name_candidate) else name_candidate
-        name_candidate = _clean_value(name_candidate)
-
-        if not name_candidate and dose_match is not None:
-            name_candidate = _clean_value(text[: dose_match.start()])
-
-        if not name_candidate or not _meaningful_candidate(name_candidate):
-            continue
-
-        medications.append(
-            Medication(
-                name=name_candidate,
-                dose=_clean_value(dose_match.group(0)) if dose_match else None,
-                frequency=_normalize_frequency(frequency_match.group(0)) if frequency_match else None,
+        if medications and (frequency_match or presentation_match or indication_match) and not _is_medication_name_candidate(text):
+            latest = medications[-1]
+            medications[-1] = Medication(
+                name=latest.name,
+                dose=latest.dose or (_clean_value(dose_match.group(0)) if dose_match else None),
+                frequency=_prefer_frequency(latest.frequency, _normalize_frequency(frequency_match.group(0)) if frequency_match else None),
+                presentation=latest.presentation or (_clean_value(presentation_match.group(0)) if presentation_match else None),
+                indication=latest.indication or (_clean_value(indication_match.group(0)) if indication_match else None),
             )
-        )
+            continue
+
+        name_end = min((match.start() for match in (dose_match, frequency_match, presentation_match) if match is not None), default=len(text))
+        name_candidate = _clean_value(text[:name_end])
+        if not _is_medication_name_candidate(name_candidate):
+            continue
+        medications.append(Medication(
+            name=name_candidate,
+            dose=_clean_value(dose_match.group(0)) if dose_match else None,
+            frequency=_normalize_frequency(frequency_match.group(0)) if frequency_match else None,
+            presentation=_clean_value(presentation_match.group(0)) if presentation_match else None,
+            indication=_clean_value(indication_match.group(0)) if indication_match else None,
+        ))
 
     return tuple(medications)
 
@@ -320,9 +362,6 @@ def extract_dates(lines: list[_LineContext]) -> tuple[str, ...]:
         if match is not None:
             dates.append(match.group(0))
             continue
-
-        if _meaningful_candidate(date_value):
-            dates.append(date_value)
 
     return tuple(dict.fromkeys(dates))
 
@@ -387,6 +426,10 @@ def _build_evidence(lines: list[_LineContext], record: MedicalRecord) -> tuple[E
             append(f"medications[{index}].dose", medication.dose)
         if medication.frequency is not None:
             append(f"medications[{index}].frequency", medication.frequency)
+        if medication.presentation is not None:
+            append(f"medications[{index}].presentation", medication.presentation)
+        if medication.indication is not None:
+            append(f"medications[{index}].indication", medication.indication)
     for index, date in enumerate(record.dates):
         append(f"dates[{index}]", date)
     if record.doctor is not None:

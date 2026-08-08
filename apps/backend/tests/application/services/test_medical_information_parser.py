@@ -107,6 +107,44 @@ class MedicalInformationParserTest(unittest.TestCase):
         self.assertIsNone(evidence.confidence)
         self.assertEqual(evidence.status, "pending_review")
 
+    def test_extracts_multiline_medications_without_classifying_noise(self) -> None:
+        record = self.parser.parse(
+            "Paciente:\nMariana López Hernández\n"
+            "Medicamentos:\n"
+            "Paracetamol\nTabletas 500 mg\nPara dolor o fiebre, según indicación médica.\nCada 8 horas\n"
+            "Solución salina\nSpray nasal\nPara aliviar congestión nasal.\nSegún necesidad\n"
+            "Antecedentes y observaciones\nRecomendaciones:\nMantener adecuada hidratación y descanso.\n"
+            "Aviso legal:\nRECETA MÉDICA — DOCUMENTO DE PRUEBA OCR\nEJEMPLO FICTICIO · SIN VALIDEZ MÉDICA\n"
+            "Institución:\nClínica San Miguel — Consulta externa\n"
+        )
+
+        self.assertEqual(record.patient.name if record.patient else None, "Mariana López Hernández")
+        self.assertEqual(record.diagnoses, ())
+        self.assertEqual(len(record.medications), 2)
+        self.assertEqual(record.medications[0].name, "Paracetamol")
+        self.assertEqual(record.medications[0].dose, "500 mg")
+        self.assertEqual(record.medications[0].presentation, "Tabletas")
+        self.assertEqual(record.medications[0].frequency, "Cada 8 horas")
+        self.assertEqual(record.medications[1].name, "Solución salina")
+        self.assertEqual(record.medications[1].presentation, "Spray nasal")
+        self.assertEqual(record.medications[1].frequency, "Según necesidad")
+        self.assertEqual(record.dates, ())
+        self.assertEqual(record.institution, "Clínica San Miguel — Consulta externa")
+        self.assertNotIn("MÉDICA — DOCUMENTO DE PRUEBA OCR", [medication.name for medication in record.medications])
+
+    def test_extracts_only_valid_date_patterns(self) -> None:
+        record = self.parser.parse(
+            "Fecha: 01 de Septiembre de 2026\n"
+            "Consulta: Consultar a un profesional de salud si los síntomas empeoran.\n"
+        )
+
+        self.assertEqual(record.dates, ("01 de Septiembre de 2026",))
+
+    def test_does_not_treat_antecedents_as_diagnosis(self) -> None:
+        record = self.parser.parse("Antecedentes y observaciones\nSin alergias conocidas\n")
+
+        self.assertEqual(record.diagnoses, ())
+
 
 if __name__ == "__main__":
     unittest.main()

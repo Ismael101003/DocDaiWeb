@@ -18,6 +18,8 @@ class Medication:
     name: str
     dose: str | None = None
     frequency: str | None = None
+    presentation: str | None = None
+    indication: str | None = None
 
 
 @dataclass(frozen=True)

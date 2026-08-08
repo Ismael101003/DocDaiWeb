@@ -47,6 +47,8 @@ class ParseMedicalInformationUseCase:
                     name=medication.name,
                     dose=medication.dose,
                     frequency=medication.frequency,
+                    presentation=medication.presentation,
+                    indication=medication.indication,
                 )
                 for medication in record.medications
             ],
