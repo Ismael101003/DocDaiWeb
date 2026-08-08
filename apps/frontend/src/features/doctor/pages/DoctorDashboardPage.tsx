@@ -1,9 +1,16 @@
 import { Link } from 'react-router-dom';
-import { doctorStats, patients, reviewRecord } from '@/data/mockData';
+import { patients, reviewRecord } from '@/data/mockData';
+import { useDocuments } from '@/app/providers/DocumentsProvider';
 import { formatDate, statusTone } from '@/utils/formatters';
 
 export function DoctorDashboardPage() {
+  const { documents, selectDocument } = useDocuments();
   const queueTone = statusTone(reviewRecord.status);
+  const liveStats = [
+    { label: 'Documentos procesados', value: String(documents.filter((document) => document.stage === 'processed' || document.stage === 'pending_human_review').length), note: 'En esta sesión de demostración' },
+    { label: 'Pendientes de revisión', value: String(documents.filter((document) => document.stage === 'pending_human_review').length), note: 'Con evidencia para validar' },
+    { label: 'Confianza OCR', value: documents.length && documents.some((document) => document.ocr) ? `${Math.round((documents.filter((document) => document.ocr).reduce((total, document) => total + (document.ocr?.confidence ?? 0), 0) / documents.filter((document) => document.ocr).length) * 100)}%` : '—', note: 'Promedio de OCR disponible' },
+  ];
 
   return (
     <div className="d-grid gap-4">
@@ -25,7 +32,7 @@ export function DoctorDashboardPage() {
       </section>
 
       <section className="row g-3">
-        {doctorStats.map((stat) => (
+        {liveStats.map((stat) => (
           <div key={stat.label} className="col-12 col-md-4">
             <div className="card docdai-surface border-0 rounded-4 h-100">
               <div className="card-body p-4">
@@ -98,6 +105,8 @@ export function DoctorDashboardPage() {
           </div>
         </div>
       </section>
+
+      {documents.length > 0 ? <section className="card docdai-surface border-0 rounded-4"><div className="card-body p-4"><div className="d-flex justify-content-between mb-3"><h3 className="h5 mb-0">Procesamientos recientes</h3><Link to="/doctor/documents">Ver todos</Link></div><div className="d-grid gap-2">{documents.slice(0, 3).map((document) => <div className="d-flex justify-content-between align-items-center p-3 rounded-3 bg-light" key={document.id}><div><strong>{document.filename}</strong><div className="small text-secondary">{document.stage.replace(/_/g, ' ')}</div></div><Link onClick={() => selectDocument(document.id)} className="btn btn-sm btn-outline-primary" to={`/doctor/review/${document.id}`}>Abrir</Link></div>)}</div></div></section> : null}
     </div>
   );
 }

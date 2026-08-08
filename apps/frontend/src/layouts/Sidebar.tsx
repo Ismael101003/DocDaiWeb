@@ -6,6 +6,7 @@ const doctorLinks = [
   { label: 'Panel', to: '/doctor' },
   { label: 'Pacientes', to: '/doctor/patients' },
   { label: 'Cargas', to: '/doctor/uploads' },
+  { label: 'Documentos', to: '/doctor/documents' },
   { label: 'Revisión IA', to: '/doctor/review/rec-404' },
 ];
 

@@ -6,6 +6,27 @@
   --docdai-surface: rgba(255, 255, 255, 0.92);
 }
 
+.docdai-process-hero { background: #12324d; color: white; border-radius: 1.25rem; padding: clamp(1.5rem, 4vw, 3rem); display: flex; gap: 1.5rem; justify-content: space-between; align-items: start; }
+.docdai-process-hero h2 { max-width: 42rem; margin: .45rem 0; font-weight: 700; }
+.docdai-process-hero p { max-width: 44rem; margin: 0; color: #c8d8e5; }
+.docdai-eyebrow { color: #0f766e; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.docdai-process-hero .docdai-eyebrow { color: #83ddd5; }
+.docdai-dropzone { cursor: pointer; min-height: 9rem; border: 1.5px dashed #79a9ac; border-radius: 1rem; background: #f4faf9; display: grid; place-content: center; text-align: center; gap: .35rem; padding: 1.5rem; }
+.docdai-dropzone span, .docdai-step span { color: #5b6978; font-size: .875rem; }
+.docdai-stepper { display: grid; gap: .25rem; }
+.docdai-step { display: grid; grid-template-columns: 2.25rem 1fr; gap: .75rem; align-items: center; padding: .6rem 0; opacity: .52; }
+.docdai-step.is-complete { opacity: 1; }
+.docdai-step-marker { width: 2rem; height: 2rem; border-radius: 50%; border: 1px solid #b7c9d1; display: grid; place-items: center; font-weight: 700; }
+.docdai-step.is-complete .docdai-step-marker { background: #0f766e; border-color: #0f766e; color: white; }
+.docdai-step strong, .docdai-step span { display: block; }
+.docdai-document-viewer { background: white; border: 1px solid var(--docdai-border); border-radius: 1rem; overflow: hidden; min-height: 22rem; }
+.docdai-document-viewer img, .docdai-document-viewer iframe { display: block; width: 100%; min-height: 28rem; max-height: 42rem; object-fit: contain; border: 0; }
+.docdai-evidence { background: white; border: 1px solid var(--docdai-border); border-left: 4px solid #0f766e; border-radius: .75rem; padding: 1.25rem; }
+.docdai-evidence h4 { font-size: 1rem; margin: .2rem 0 0; }
+.docdai-evidence blockquote { border-left: 2px solid #c8d8e5; color: #405467; font-size: .9rem; margin: 1rem 0 0; padding-left: .75rem; }
+.docdai-ocr-text { white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem; max-height: 22rem; overflow: auto; margin: 0; }
+@media (max-width: 575px) { .docdai-process-hero { display: grid; } }
+
 html,
 body,
 #root {

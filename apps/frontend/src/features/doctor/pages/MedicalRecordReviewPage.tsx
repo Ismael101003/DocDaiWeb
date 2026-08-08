@@ -1,93 +1,14 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { StatusBadge } from '@/components/StatusBadge';
-import { doctorReviewFields, reviewRecord } from '@/data/mockData';
+import { useDocuments } from '@/app/providers/DocumentsProvider';
+import type { Evidence } from '@/types/documents';
 
+type ReviewDecision = 'pending' | 'approved' | 'correcting' | 'rejected';
+const confidence = (value: number | null) => value === null ? 'No calculada' : `${Math.round(value * 100)}%`;
+function EvidenceRow({ item }: { item: Evidence }) { const [decision, setDecision] = useState<ReviewDecision>('pending'); const [value, setValue] = useState(item.value); return <article className="docdai-evidence"><div className="d-flex justify-content-between gap-3"><div><span className="docdai-eyebrow">{item.field}</span>{decision === 'correcting' ? <input className="form-control mt-1" value={value} onChange={(event) => setValue(event.target.value)} /> : <h4>{value}</h4>}</div><span className={`badge text-bg-${decision === 'approved' ? 'success' : decision === 'rejected' ? 'danger' : 'warning'}`}>{decision === 'pending' ? 'Pendiente' : decision === 'correcting' ? 'Corrección local' : decision === 'approved' ? 'Aprobado localmente' : 'Rechazado localmente'}</span></div><blockquote>“{item.source_text}”</blockquote><div className="small text-secondary">Página {item.page ?? 'no disponible'} · confianza: {confidence(item.confidence)} · regla: {item.match_type}</div><div className="d-flex gap-2 flex-wrap mt-3"><button className="btn btn-sm btn-success" onClick={() => setDecision('approved')}>Aprobar</button><button className="btn btn-sm btn-outline-primary" onClick={() => setDecision('correcting')}>Corregir</button><button className="btn btn-sm btn-outline-danger" onClick={() => setDecision('rejected')}>Rechazar</button></div></article>; }
 export function MedicalRecordReviewPage() {
-  const { recordId } = useParams();
-  const [reviewState, setReviewState] = useState<'idle' | 'approved' | 'editing'>('idle');
-
-  return (
-    <div className="card docdai-surface border-0 rounded-4">
-      <div className="card-body p-4 p-xl-5">
-        <div className="d-flex flex-wrap justify-content-between gap-3 align-items-start mb-4">
-          <div>
-            <h2 className="h4 mb-2">Revisión del expediente</h2>
-            <p className="text-secondary mb-0">Confirma el registro extraído antes de escribirlo en el expediente del paciente.</p>
-          </div>
-          <StatusBadge confidence={reviewRecord.confidence} />
-        </div>
-
-        <div className="row g-4">
-          <div className="col-12 col-xl-7">
-            <div className="d-grid gap-3">
-              <div className="p-3 rounded-4 bg-light">
-                <div className="small text-secondary">ID del expediente</div>
-                <div className="fw-semibold">{recordId ?? reviewRecord.id}</div>
-              </div>
-              <div className="p-3 rounded-4 bg-light">
-                <div className="small text-secondary">Paciente</div>
-                <div className="fw-semibold">{reviewRecord.patientName}</div>
-              </div>
-              <div className="p-3 rounded-4 bg-light">
-                <div className="small text-secondary">Origen</div>
-                <div className="fw-semibold">{reviewRecord.source}</div>
-              </div>
-
-              <div className="card border-0 bg-light rounded-4">
-                <div className="card-body p-4">
-                  <h3 className="h6 mb-3">Datos clínicos estructurados</h3>
-                  <div className="d-grid gap-3">
-                    {doctorReviewFields.map((field) => (
-                      <div key={field.label} className="d-flex justify-content-between gap-3 align-items-center">
-                        <div>
-                          <div className="small text-secondary">{field.label}</div>
-                          <div className="fw-semibold">{field.value}</div>
-                        </div>
-                        <StatusBadge confidence={field.confidence} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-12 col-xl-5 d-grid gap-4">
-            <div className="card border-0 bg-light rounded-4 h-100">
-              <div className="card-body p-4">
-                <h3 className="h6 mb-3">Resumen clínico</h3>
-                <p className="text-secondary mb-3">{reviewRecord.summary}</p>
-                <ul className="text-secondary mb-0 ps-3 d-grid gap-2">
-                  {reviewRecord.details.map((detail) => (
-                    <li key={detail}>{detail}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="card border-0 bg-light rounded-4">
-              <div className="card-body p-4">
-                <div className="d-flex flex-wrap gap-2 mb-3">
-                  <button type="button" className="btn btn-success" onClick={() => setReviewState('approved')}>
-                    Aprobar
-                  </button>
-                  <button type="button" className="btn btn-outline-primary" onClick={() => setReviewState('editing')}>
-                    Editar salida de IA
-                  </button>
-                  <Link to="/doctor/uploads" className="btn btn-link">
-                    Volver a cargas
-                  </Link>
-                </div>
-
-                {reviewState === 'approved' ? <div className="alert alert-success mb-0">El registro extraído fue aprobado y ya está listo para guardarse en el expediente.</div> : null}
-                {reviewState === 'editing' ? <div className="alert alert-info mb-0">Abre el formulario de edición cuando la API esté conectada.</div> : null}
-                {reviewState === 'idle' ? <div className="alert alert-warning mb-0">Revisa los niveles de confianza antes de guardar algo en el expediente.</div> : null}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  const { recordId } = useParams(); const { documents, selectDocument } = useDocuments(); const document = documents.find((item) => item.id === recordId);
+  if (!document) return <div className="card docdai-surface border-0 rounded-4"><div className="card-body p-5 text-center"><h2 className="h4">Documento no disponible en esta sesión</h2><p className="text-secondary">El backend mantiene resultados de forma temporal; carga y procesa un documento para revisarlo aquí.</p><Link className="btn btn-primary" to="/doctor/uploads">Ir a carga</Link></div></div>;
+  const parsed = document.parsed;
+  return <div className="d-grid gap-4"><div className="d-flex justify-content-between gap-3 align-items-end flex-wrap"><div><span className="docdai-eyebrow">Revisión humana · sin persistencia</span><h2 className="h3 mb-1">{document.filename}</h2><p className="text-secondary mb-0">Las decisiones de esta pantalla se mantienen solo en el navegador hasta que exista una API de aprobación.</p></div><Link className="btn btn-outline-secondary" to="/doctor/documents">Volver a documentos</Link></div><div className="row g-4"><section className="col-xl-5"><div className="docdai-document-viewer">{document.previewUrl?.startsWith('blob:') && document.filename.toLowerCase().endsWith('.pdf') ? <iframe title="Vista previa del documento" src={document.previewUrl} /> : document.previewUrl ? <img src={document.previewUrl} alt={`Vista previa de ${document.filename}`} /> : <div className="text-secondary">La vista previa solo está disponible mientras esta pestaña permanece abierta.</div>}<div className="p-3 border-top"><strong>{document.pages ?? '—'} páginas</strong><span className="ms-3 text-secondary">OCR: {document.ocr ? `${Math.round(document.ocr.confidence * 100)}% · ${document.ocr.processing_time.toFixed(2)} s` : 'pendiente'}</span></div></div>{document.ocr ? <div className="card docdai-surface border-0 rounded-4 mt-4"><div className="card-body p-4"><h3 className="h6">Texto extraído</h3><pre className="docdai-ocr-text">{document.ocr.text}</pre></div></div> : null}</section><section className="col-xl-7">{!parsed ? <div className="card docdai-surface border-0 rounded-4"><div className="card-body p-5"><h3 className="h5">Aún no hay información estructurada</h3><p className="text-secondary">Completa OCR y parsing desde el flujo de procesamiento para mostrar evidencia verificable.</p><Link onClick={() => selectDocument(document.id)} className="btn btn-primary" to="/doctor/uploads">Continuar procesamiento</Link></div></div> : <div className="d-grid gap-3"><div className="card docdai-surface border-0 rounded-4"><div className="card-body p-4"><h3 className="h5">Resumen estructurado propuesto</h3><dl className="row mb-0 small"><dt className="col-sm-4">Paciente</dt><dd className="col-sm-8">{parsed.patient?.name ?? 'No detectado'}{parsed.patient?.age !== null && parsed.patient?.age !== undefined ? ` · ${parsed.patient.age} años` : ''}</dd><dt className="col-sm-4">Diagnósticos</dt><dd className="col-sm-8">{parsed.diagnoses.join(', ') || 'No detectados'}</dd><dt className="col-sm-4">Medicamentos</dt><dd className="col-sm-8">{parsed.medications.map((medication) => [medication.name, medication.dose, medication.frequency].filter(Boolean).join(' · ')).join('; ') || 'No detectados'}</dd><dt className="col-sm-4">Médico / institución</dt><dd className="col-sm-8">{[parsed.doctor, parsed.institution].filter(Boolean).join(' · ') || 'No detectados'}</dd></dl></div></div><div><h3 className="h5 mb-3">Evidencia para validar</h3>{parsed.evidence.length ? <div className="d-grid gap-3">{parsed.evidence.map((item, index) => <EvidenceRow key={`${item.field}-${index}`} item={item} />)}</div> : <div className="alert alert-warning">El parser no devolvió evidencia para este documento. No hay nada que aprobar.</div>}</div></div>}</section></div></div>;
 }
