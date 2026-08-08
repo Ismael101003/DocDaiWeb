@@ -14,3 +14,6 @@ export interface ProcessingDocument {
   id: string; filename: string; size: number; createdAt: string; stage: DocumentStage;
   pages?: number; ocr?: OCRResponse; parsed?: MedicalInformationResponse; previewUrl?: string;
 }
+export type PipelineStep = 'upload' | 'prepare' | 'ocr' | 'parse' | 'review';
+export type PipelineStepState = 'pending' | 'processing' | 'completed' | 'error';
+export interface ProcessingLogEvent { id: string; timestamp: string; kind: 'processing' | 'success' | 'error' | 'review'; message: string; }

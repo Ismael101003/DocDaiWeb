@@ -1,0 +1,2 @@
+import type { Evidence } from '@/types/documents';
+export function EvidenceCard({ evidence }: { evidence: Evidence }) { return <article className="docdai-evidence"><strong>{evidence.field}</strong><p className="mb-2">{evidence.value}</p><blockquote>“{evidence.source_text}”</blockquote><small className="text-secondary">Página {evidence.page ?? 'no disponible'} · confianza {evidence.confidence === null ? 'no calculada' : `${(evidence.confidence * 100).toFixed(2)}%`}</small></article>; }

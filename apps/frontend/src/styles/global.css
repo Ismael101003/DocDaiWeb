@@ -25,6 +25,18 @@
 .docdai-evidence h4 { font-size: 1rem; margin: .2rem 0 0; }
 .docdai-evidence blockquote { border-left: 2px solid #c8d8e5; color: #405467; font-size: .9rem; margin: 1rem 0 0; padding-left: .75rem; }
 .docdai-ocr-text { white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem; max-height: 22rem; overflow: auto; margin: 0; }
+.docdai-processing-stepper { list-style: none; padding: 0; margin: 0; }
+.docdai-processing-stepper li { position: relative; display: flex; align-items: center; gap: .75rem; min-height: 3.1rem; color: #7b8a96; }
+.docdai-processing-stepper li:not(:last-child)::after { content: ''; position: absolute; width: 1px; height: 1.2rem; background: #d4e1e6; left: .83rem; top: 2.2rem; }
+.docdai-processing-stepper li > span { width: 1.7rem; height: 1.7rem; border-radius: 50%; display: grid; place-items: center; border: 1px solid #c2d2d9; font-size: .75rem; }
+.docdai-processing-stepper .is-completed { color: #145d56; }.docdai-processing-stepper .is-completed > span { color: white; border-color: #0f766e; background: #0f766e; }
+.docdai-processing-stepper .is-processing { color: #12324d; }.docdai-processing-stepper .is-processing > span { border-color: #157b87; background: #e7f5f5; animation: docdai-pulse 1.4s ease-in-out infinite; }
+.docdai-processing-stepper .is-error { color: #9c3431; }.docdai-processing-stepper .is-error > span { color: white; border-color: #b64945; background: #b64945; }
+.docdai-processing-log { background: #f8fbfc; border: 1px solid #dbe7eb; border-radius: 1rem; padding: 1.25rem; height: 100%; }
+.docdai-log-row { display: grid; grid-template-columns: 4.7rem 1.25rem 1fr; align-items: start; gap: .5rem; font-size: .86rem; padding: .45rem 0; border-bottom: 1px solid #e6eef0; }.docdai-log-row:last-child { border-bottom: 0; }.docdai-log-row time { color: #748491; font-variant-numeric: tabular-nums; }.docdai-log-row.is-success span:nth-child(2) { color: #0f766e; font-weight: 700; }.docdai-log-row.is-error span:nth-child(2) { color: #b64945; font-weight: 700; }
+.docdai-surface .col-4 strong, .docdai-surface .col-4 small { display: block; }.docdai-surface .col-4 strong { font-size: 1.15rem; color: #12324d; }.docdai-surface .col-4 small { color: #667784; }
+@keyframes docdai-pulse { 50% { transform: scale(1.08); } }
+@media (prefers-reduced-motion: reduce) { .docdai-processing-stepper .is-processing > span { animation: none; } }
 @media (max-width: 575px) { .docdai-process-hero { display: grid; } }
 
 html,
