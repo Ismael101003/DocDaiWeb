@@ -1,0 +1,30 @@
+# apps/backend/requirements.txt
+
+# --- API y servidor principales ---
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+pydantic>=2.6.0
+python-multipart>=0.0.9
+pydantic[email]
+
+
+# --- IA y orquestación multiagente ---
+langgraph>=0.0.30
+langchain-core>=0.1.40
+langchain-community>=0.0.34
+langchain-openai>=0.1.1       
+
+# --- Procesamiento documental y visión ---
+paddlepaddle==3.2.1
+paddleocr[all]==3.5.0; sys_platform != 'darwin'  
+opencv-python-headless>=4.9.0.80               
+Pillow>=10.0.0
+PyMuPDF>=1.24.0
+
+# --- Utilidades y base de datos ---
+python-dotenv>=1.0.1
+httpx>=0.27.0
+
+# --- Base de datos (PostgreSQL) ---
+asyncpg>=0.29.0
+sqlalchemy>=2.0.25
