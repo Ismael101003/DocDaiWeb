@@ -40,7 +40,7 @@ export function useDocumentProcessing() {
         step = 'prepare';
         setProcessingStep('prepare'); log('processing', 'Preparando documento…');
         const prepared = await prepareDocument(document.id);
-        document = { ...document, stage: 'prepared', pages: prepared.pages }; updateDocument(document.id, { stage: 'prepared', pages: prepared.pages });
+        document = { ...document, stage: 'prepared', pages: prepared.pages, preparedImages: prepared.images }; updateDocument(document.id, { stage: 'prepared', pages: prepared.pages, preparedImages: prepared.images });
         log('success', `Documento preparado · ${prepared.pages} ${prepared.pages === 1 ? 'página' : 'páginas'}`);
         setCompletedThrough('prepare');
       }

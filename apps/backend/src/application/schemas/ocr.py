@@ -28,3 +28,21 @@ class OcrExtractionResponse(BaseModel):
     text: str
     confidence: float
     processing_time: float
+    page_results: list["OcrPageResponse"] = []
+
+
+class OcrBlockResponse(BaseModel):
+    """Bloque OCR técnico; no representa un dato clínico aprobado."""
+
+    text: str
+    confidence: float | None = None
+    polygon: list[tuple[float, float]] = []
+
+
+class OcrPageResponse(BaseModel):
+    """Texto y bloques detectados en una página preparada."""
+
+    page: int
+    text: str
+    confidence: float | None = None
+    blocks: list[OcrBlockResponse] = []

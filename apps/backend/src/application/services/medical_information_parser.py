@@ -153,13 +153,19 @@ def _split_label(line: str, labels: tuple[str, ...]) -> str | None:
     return None
 
 
+def _is_section_header(line: str, labels: tuple[str, ...]) -> bool:
+    """Indica si una línea contiene únicamente una etiqueta de sección."""
+    normalized_line = _normalize_for_match(line).strip(" \t:-–—")
+    return any(normalized_line == _normalize_for_match(label) for label in labels)
+
+
 def _is_known_header(line: str) -> bool:
-    normalized_line = _normalize_for_match(line).rstrip(":")
+    normalized_line = _normalize_for_match(line).strip(" \t:-–—")
     if not normalized_line:
         return False
     if normalized_line in _SECTION_TERMINATORS or normalized_line in {"edad", "sexo", "alergias", "signos vitales"}:
         return True
-    return _split_label(line, _KNOWN_HEADERS) is not None
+    return _is_section_header(line, _KNOWN_HEADERS) or _split_label(line, _KNOWN_HEADERS) is not None
 
 
 def _extract_section(lines: list[_LineContext], labels: tuple[str, ...]) -> list[_LineContext]:
@@ -235,12 +241,8 @@ def _meaningful_candidate(value: str) -> bool:
 
 def extract_age(lines: list[_LineContext]) -> int | None:
     """Extrae una edad solo de una etiqueta explícita y un valor numérico visible."""
-    for line in lines:
-        age_value = _split_label(line.text, ("edad",))
-        if age_value is None:
-            continue
-
-        match = _AGE_PATTERN.search(age_value)
+    for line in _extract_section(lines, ("edad",)):
+        match = _AGE_PATTERN.search(line.text)
         if match is not None:
             return int(match.group(1))
     return None
@@ -252,8 +254,9 @@ def extract_patient(lines: list[_LineContext]) -> Patient | None:
     patient_values = _extract_section(lines, _PATIENT_LABELS)
     if patient_values:
         for candidate in patient_values:
-            if _is_person_name(candidate.text):
-                name = candidate.text
+            candidate_name = _clean_value(_split_label(candidate.text, ("nombre",)) or candidate.text)
+            if _is_person_name(candidate_name):
+                name = candidate_name
                 break
 
     age = extract_age(lines)
@@ -324,7 +327,7 @@ def extract_medications(lines: list[_LineContext]) -> tuple[Medication, ...]:
         presentation_match = _PRESENTATION_PATTERN.search(text)
         indication_match = _INDICATION_PATTERN.match(_clean_value(text))
 
-        if medications and (frequency_match or presentation_match or indication_match) and not _is_medication_name_candidate(text):
+        if medications and (dose_match or frequency_match or presentation_match or indication_match) and not _is_medication_name_candidate(text):
             latest = medications[-1]
             medications[-1] = Medication(
                 name=latest.name,

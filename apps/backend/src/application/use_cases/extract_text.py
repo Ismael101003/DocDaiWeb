@@ -4,8 +4,10 @@ import logging
 from time import perf_counter
 
 from src.application.schemas.ocr import (
+    OcrBlockResponse,
     OcrExtractionRequest,
     OcrExtractionResponse,
+    OcrPageResponse,
     OcrProcessingResponse,
 )
 from src.domain.interfaces.ocr_provider import OcrProvider
@@ -92,9 +94,33 @@ class ExtractTextUseCase:
             text="\n".join(page_result.text for page_result in page_results if page_result.text),
             confidence=round(sum(confidences) / len(confidences), 4) if confidences else 0.0,
             processing_time=round(processing_time, 4),
+            page_results=[
+                OcrPageResponse(
+                    page=index,
+                    text=page_result.text,
+                    confidence=(
+                        round(sum(page_result.confidences) / len(page_result.confidences), 4)
+                        if page_result.confidences
+                        else None
+                    ),
+                    blocks=[
+                        OcrBlockResponse(
+                            text=block.text,
+                            confidence=block.confidence,
+                            polygon=list(block.polygon),
+                        )
+                        for block in page_result.blocks
+                    ],
+                )
+                for index, page_result in enumerate(page_results, start=1)
+            ],
         )
         if self._ocr_result_storage is not None:
-            self._ocr_result_storage.save(document_id=document_id, text=result.text)
+            self._ocr_result_storage.save(
+                document_id=document_id,
+                text=result.text,
+                page_texts=tuple(page_result.text for page_result in page_results),
+            )
         logger.info(
             "OCR completado correctamente",
             extra={

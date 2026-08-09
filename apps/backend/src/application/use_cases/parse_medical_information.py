@@ -34,7 +34,10 @@ class ParseMedicalInformationUseCase:
                 "No existe un resultado OCR temporal para el documento. Ejecute OCR antes de parsear."
             )
 
-        record = self._parser.parse(ocr_text)
+        record = self._parser.parse(
+            ocr_text,
+            page_texts=self._ocr_result_storage.get_page_texts(document_id=document_id),
+        )
         return MedicalInformationResponse(
             patient=(
                 PatientInformationResponse(name=record.patient.name, age=record.patient.age)

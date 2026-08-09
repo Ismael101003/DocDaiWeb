@@ -7,6 +7,7 @@ const titleMap: Array<[RegExp, { title: string; subtitle: string }]> = [
   [/^\/doctor\/patients$/, { title: 'Pacientes', subtitle: 'Busca y supervisa el listado de pacientes' }],
   [/^\/doctor\/uploads$/, { title: 'Cargar documentos', subtitle: 'Procesa escaneos, PDFs y fotos mediante OCR' }],
   [/^\/doctor\/documents$/, { title: 'Documentos', subtitle: 'Estado del procesamiento y cola de revisión' }],
+  [/^\/doctor\/documents\/[^/]+\/review$/, { title: 'Revisión OCR', subtitle: 'Documento original, evidencia y validación clínica' }],
   [/^\/doctor\/review\/[^/]+$/, { title: 'Revisión del expediente', subtitle: 'Aprueba o edita los datos clínicos extraídos' }],
   [/^\/doctor$/, { title: 'Panel del doctor', subtitle: 'Carga clínica, cola de revisión y actividad de pacientes' }],
   [/^\/patient\/records\/[^/]+$/, { title: 'Detalle del expediente', subtitle: 'Vista de reporte legible para el paciente' }],

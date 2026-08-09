@@ -8,7 +8,7 @@ from typing import Any
 
 from paddleocr import PaddleOCR
 
-from src.domain.interfaces.ocr_provider import OcrEngineError, OcrPageResult
+from src.domain.interfaces.ocr_provider import OcrBlock, OcrEngineError, OcrPageResult
 
 logger = logging.getLogger(__name__)
 
@@ -29,14 +29,16 @@ class PaddleOcrProvider:
             try:
                 logger.debug("Procesando página OCR", extra={"page": page_number})
                 raw_results = engine.predict(str(image_path))
-                text, confidences = self._parse_result(list(raw_results))
+                text, confidences, blocks = self._parse_result(list(raw_results))
             except OcrEngineError:
                 raise
             except Exception as exc:
                 logger.exception("Error al procesar página OCR", extra={"page": page_number})
                 raise OcrEngineError("PaddleOCR no pudo procesar una imagen preparada.") from exc
 
-            page_results.append(OcrPageResult(text=text, confidences=tuple(confidences)))
+            page_results.append(
+                OcrPageResult(text=text, confidences=tuple(confidences), blocks=tuple(blocks))
+            )
             logger.debug(
                 "Página OCR procesada",
                 extra={"page": page_number, "detected_lines": len(confidences)},
@@ -64,14 +66,15 @@ class PaddleOcrProvider:
         logger.info("Modelo PaddleOCR disponible", extra={"language": self._language})
         return self._engine
 
-    def _parse_result(self, results: list[Any]) -> tuple[str, list[float]]:
+    def _parse_result(self, results: list[Any]) -> tuple[str, list[float], list[OcrBlock]]:
         """Extrae texto y puntuaciones de formatos de resultado PaddleOCR 2.x y 3.x."""
         lines: list[tuple[str, float]] = []
 
         for result in results:
             self._collect_lines(self._to_mapping(result), lines)
 
-        return "\n".join(text for text, _ in lines), [score for _, score in lines]
+        blocks = [OcrBlock(text=text, confidence=score) for text, score in lines]
+        return "\n".join(text for text, _ in lines), [score for _, score in lines], blocks
 
     def _to_mapping(self, value: Any) -> Any:
         """Convierte resultados serializables de PaddleOCR a estructuras estándar."""

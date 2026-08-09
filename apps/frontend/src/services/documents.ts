@@ -1,11 +1,15 @@
 import type { DocumentUploadResponse, MedicalInformationResponse, OCRResponse, PrepareDocumentResponse } from '@/types/documents';
 
 const configuredApiUrl = import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8001';
-const API_BASE_URL = configuredApiUrl.replace(/\/$/, '').endsWith('/api/v1') ? configuredApiUrl.replace(/\/$/, '') : `${configuredApiUrl.replace(/\/$/, '')}/api/v1`;
+export const API_BASE_URL = configuredApiUrl.replace(/\/$/, '').endsWith('/api/v1') ? configuredApiUrl.replace(/\/$/, '') : `${configuredApiUrl.replace(/\/$/, '')}/api/v1`;
 const DEFAULT_TIMEOUT_MS = 120_000;
 const OCR_TIMEOUT_MS = 10 * 60_000;
 
 class ApiError extends Error { constructor(message: string, public status?: number) { super(message); } }
+
+const devLog = (event: string, metadata: Record<string, unknown> = {}) => {
+  if (import.meta.env.DEV) console.info(`[DocDaiWeb] ${new Date().toISOString()} ${event}`, metadata);
+};
 
 async function request<T>(path: string, init: RequestInit = {}, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<T> {
   const controller = new AbortController();
@@ -24,7 +28,8 @@ async function request<T>(path: string, init: RequestInit = {}, timeoutMs = DEFA
   } finally { window.clearTimeout(timeout); }
 }
 
-export const uploadDocument = (file: File) => { const data = new FormData(); data.append('file', file); return request<DocumentUploadResponse>('/documents/upload', { method: 'POST', body: data }); };
-export const prepareDocument = (id: string) => request<PrepareDocumentResponse>(`/documents/${id}/prepare`, { method: 'POST' });
-export const extractOCR = (id: string) => request<OCRResponse>(`/documents/${id}/ocr`, { method: 'POST' }, OCR_TIMEOUT_MS);
-export const parseMedicalInformation = (id: string) => request<MedicalInformationResponse>(`/documents/${id}/parse`, { method: 'POST' });
+export const uploadDocument = (file: File) => { const data = new FormData(); data.append('file', file); devLog('Subiendo documento', { size: file.size }); return request<DocumentUploadResponse>('/documents/upload', { method: 'POST', body: data }); };
+export const prepareDocument = (id: string) => { devLog('Preparando documento', { documentId: id }); return request<PrepareDocumentResponse>(`/documents/${id}/prepare`, { method: 'POST' }); };
+export const extractOCR = (id: string) => { devLog('Iniciando OCR', { documentId: id }); return request<OCRResponse>(`/documents/${id}/ocr`, { method: 'POST' }, OCR_TIMEOUT_MS); };
+export const parseMedicalInformation = (id: string) => { devLog('Analizando información médica', { documentId: id }); return request<MedicalInformationResponse>(`/documents/${id}/parse`, { method: 'POST' }); };
+export const preparedPageUrl = (documentId: string, page: number) => `${API_BASE_URL}/documents/${encodeURIComponent(documentId)}/pages/${page}`;

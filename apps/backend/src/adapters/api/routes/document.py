@@ -1,6 +1,7 @@
 """Endpoints HTTP para la recepción de documentos."""
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
 
 from src.application.schemas.common import ErrorResponse
 from src.application.schemas.document import DocumentUploadResponse, PreparedDocumentResponse
@@ -179,6 +180,26 @@ async def prepare_document(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             detail=str(exc),
         ) from exc
+
+
+@router.get(
+    "/{document_id}/pages/{page}",
+    summary="Obtiene una página preparada para revisión humana",
+    response_class=FileResponse,
+)
+async def get_prepared_page(document_id: str, page: int) -> FileResponse:
+    """Sirve únicamente PNGs preparados asociados al identificador solicitado."""
+    try:
+        image_path = LocalPreparedDocumentStorage().get_image_path(
+            document_id=document_id,
+            page=page,
+        )
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="La página preparada no existe.",
+        ) from exc
+    return FileResponse(image_path, media_type="image/png", filename=image_path.name)
     except InvalidDocumentError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,

@@ -145,6 +145,71 @@ class MedicalInformationParserTest(unittest.TestCase):
 
         self.assertEqual(record.diagnoses, ())
 
+    def test_extracts_bare_section_headers_with_values_on_following_lines(self) -> None:
+        record = self.parser.parse(
+            "PACIENTE\nNombre: Mariana López Hernández\nEdad\n54 años\n\n"
+            "DIAGNÓSTICO\nHipertensión arterial\n\n"
+            "MEDICAMENTOS\nParacetamol\n500 mg\nCada 8 horas\n\n"
+            "Médico\nDr. Juan Pérez\n\nInstitución\nClínica San Miguel\n"
+        )
+
+        self.assertEqual(record.patient.name if record.patient else None, "Mariana López Hernández")
+        self.assertEqual(record.patient.age if record.patient else None, 54)
+        self.assertEqual(record.diagnoses, ("Hipertensión arterial",))
+        self.assertEqual(record.medications[0].name, "Paracetamol")
+        self.assertEqual(record.medications[0].dose, "500 mg")
+        self.assertEqual(record.medications[0].frequency, "Cada 8 horas")
+        self.assertEqual(record.doctor, "Dr. Juan Pérez")
+        self.assertEqual(record.institution, "Clínica San Miguel")
+        self.assertEqual(
+            {evidence.field for evidence in record.evidence},
+            {
+                "patient.name",
+                "patient.age",
+                "diagnoses[0]",
+                "medications[0].name",
+                "medications[0].dose",
+                "medications[0].frequency",
+                "doctor",
+                "institution",
+            },
+        )
+
+    def test_extracts_multiple_medications_with_separate_dose_lines(self) -> None:
+        record = self.parser.parse(
+            "MEDICAMENTOS\nIbuprofeno\n400 mg\nCada 8 horas\n\n"
+            "Loratadina\n10 mg\nUna vez al día\n\nOBSERVACIONES\nRevisar en consulta.\n"
+        )
+
+        self.assertEqual(len(record.medications), 2)
+        self.assertEqual(record.medications[0].name, "Ibuprofeno")
+        self.assertEqual(record.medications[0].dose, "400 mg")
+        self.assertEqual(record.medications[0].frequency, "Cada 8 horas")
+        self.assertEqual(record.medications[1].name, "Loratadina")
+        self.assertEqual(record.medications[1].dose, "10 mg")
+        self.assertEqual(record.medications[1].frequency, "Una vez al día")
+
+    def test_tolerates_ocr_spacing_without_using_unlabeled_values(self) -> None:
+        record = self.parser.parse(
+            "  PACIENTE :  \n  Ana   Ruiz  \nEDAD :\n  37  años\n\n"
+            "DATOS CLÍNICOS\nMigraña\nAspirina\n"
+        )
+
+        self.assertEqual(record.patient.name if record.patient else None, "Ana Ruiz")
+        self.assertEqual(record.patient.age if record.patient else None, 37)
+        self.assertEqual(record.diagnoses, ())
+        self.assertEqual(record.medications, ())
+
+    def test_does_not_extract_from_sections_without_a_recognized_label(self) -> None:
+        record = self.parser.parse(
+            "RESUMEN CLÍNICO\nAna Ruiz\nMigraña\n"
+            "Amoxicilina\n500 mg\nCada 8 horas\n"
+        )
+
+        self.assertIsNone(record.patient)
+        self.assertEqual(record.diagnoses, ())
+        self.assertEqual(record.medications, ())
+
 
 if __name__ == "__main__":
     unittest.main()

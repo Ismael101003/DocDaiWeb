@@ -12,6 +12,7 @@ import { PatientDetailPage } from '@/features/doctor/pages/PatientDetailPage';
 import { UploadDocumentPage } from '@/features/doctor/pages/UploadDocumentPage';
 import { DocumentsPage } from '@/features/doctor/pages/DocumentsPage';
 import { MedicalRecordReviewPage } from '@/features/doctor/pages/MedicalRecordReviewPage';
+import { OcrReviewPage } from '@/features/ocr-layout/pages/OcrReviewPage';
 import { PatientDashboardPage } from '@/features/patient/pages/PatientDashboardPage';
 import { PatientRecordsPage } from '@/features/patient/pages/PatientRecordsPage';
 import { PatientRecordDetailPage } from '@/features/patient/pages/PatientRecordDetailPage';
@@ -50,6 +51,7 @@ export function AppRouter() {
             <Route path="patients/:patientId" element={<PatientDetailPage />} />
             <Route path="uploads" element={<UploadDocumentPage />} />
             <Route path="documents" element={<DocumentsPage />} />
+            <Route path="documents/:documentId/review" element={<OcrReviewPage />} />
             <Route path="review/:recordId" element={<MedicalRecordReviewPage />} />
           </Route>
 

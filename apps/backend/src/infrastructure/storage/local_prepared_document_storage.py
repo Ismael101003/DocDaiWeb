@@ -29,3 +29,13 @@ class LocalPreparedDocumentStorage:
             extra={"document_id": document_id, "pages": len(image_paths)},
         )
         return image_paths
+
+    def get_image_path(self, *, document_id: str, page: int) -> Path:
+        """Devuelve una página preparada concreta sin aceptar rutas arbitrarias."""
+        if page < 1:
+            raise FileNotFoundError(document_id)
+        image_paths = self.get_image_paths(document_id=document_id)
+        try:
+            return image_paths[page - 1]
+        except IndexError as exc:
+            raise FileNotFoundError(document_id) from exc

@@ -10,11 +10,21 @@ class OcrEngineError(Exception):
 
 
 @dataclass(frozen=True)
+class OcrBlock:
+    """Una línea OCR con su ubicación técnica en la página preparada."""
+
+    text: str
+    confidence: float | None = None
+    polygon: tuple[tuple[float, float], ...] = ()
+
+
+@dataclass(frozen=True)
 class OcrPageResult:
     """Resultado OCR no aprobado de una imagen preparada."""
 
     text: str
     confidences: tuple[float, ...]
+    blocks: tuple[OcrBlock, ...] = ()
 
 
 class OcrProvider(Protocol):
