@@ -199,12 +199,12 @@ async def get_prepared_page(document_id: str, page: int) -> FileResponse:
             status_code=status.HTTP_404_NOT_FOUND,
             detail="La página preparada no existe.",
         ) from exc
-    return FileResponse(image_path, media_type="image/png", filename=image_path.name)
     except InvalidDocumentError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=str(exc),
         ) from exc
+    return FileResponse(image_path, media_type="image/png", filename=image_path.name)
 
 
 @router.post(

@@ -5,8 +5,10 @@ export interface OverlayBounds { left: number; top: number; width: number; heigh
 
 export function normalizeBoundingBox(polygon: Array<[number, number]>): OverlayBounds | null {
   if (polygon.length < 2) return null;
-  const xValues = polygon.map(([x]) => x); const yValues = polygon.map(([, y]) => y;
-  const left = Math.min(...xValues); const top = Math.min(...yValues);
+  const xValues = polygon.map(([x]) => x);
+  const yValues = polygon.map(([, y]) => y);
+  const left = Math.min(...xValues);
+  const top = Math.min(...yValues);
   return { left, top, width: Math.max(...xValues) - left, height: Math.max(...yValues) - top };
 }
 
