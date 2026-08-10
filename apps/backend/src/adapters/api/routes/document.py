@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
 
 from src.application.schemas.common import ErrorResponse
+from src.application.schemas.document_review import DocumentReviewRequest, DocumentReviewResponse
 from src.application.schemas.document import DocumentUploadResponse, PreparedDocumentResponse
 from src.application.schemas.ocr import OcrExtractionResponse
 from src.application.schemas.medical_information import MedicalInformationResponse
@@ -26,6 +27,12 @@ from src.application.use_cases.parse_medical_information import (
     OcrResultNotAvailableError,
     ParseMedicalInformationUseCase,
 )
+from src.application.use_cases.review_document import (
+    ReviewDocumentNotFoundError,
+    ReviewDocumentUseCase,
+    ReviewDocumentValidationError,
+)
+from src.application.use_cases.approve_document_review import ApproveDocumentReviewUseCase
 from src.domain.interfaces.document_processor import (
     InvalidDocumentError,
     UnsupportedDocumentError,
@@ -44,6 +51,9 @@ from src.infrastructure.ocr.paddle_provider import PaddleOcrProvider
 from src.infrastructure.storage.local_prepared_document_storage import (
     LocalPreparedDocumentStorage,
 )
+from src.infrastructure.storage.in_memory_document_review_storage import (
+    InMemoryDocumentReviewStorage,
+)
 from src.infrastructure.storage.local_temporary_document_storage import (
     LocalTemporaryDocumentStorage,
 )
@@ -51,6 +61,7 @@ from src.infrastructure.storage.in_memory_ocr_result_storage import InMemoryOcrR
 
 router = APIRouter()
 _ocr_result_storage = InMemoryOcrResultStorage()
+_document_review_storage = InMemoryDocumentReviewStorage()
 
 
 def get_request_document_upload_use_case() -> RequestDocumentUploadUseCase:
@@ -90,6 +101,25 @@ def get_parse_medical_information_use_case() -> ParseMedicalInformationUseCase:
     return ParseMedicalInformationUseCase(
         parser=MedicalInformationParser(),
         ocr_result_storage=_ocr_result_storage,
+    )
+
+
+def get_save_document_review_use_case() -> ReviewDocumentUseCase:
+    """Compone el caso de uso para guardar la revisión sin aprobarla."""
+    return ReviewDocumentUseCase(
+        document_storage=LocalTemporaryDocumentStorage(),
+        parse_use_case=get_parse_medical_information_use_case(),
+        review_storage=_document_review_storage,
+        review_status="reviewing",
+    )
+
+
+def get_approve_document_review_use_case() -> ApproveDocumentReviewUseCase:
+    """Compone el caso de uso para cerrar la revisión y dejarla aprobada."""
+    return ApproveDocumentReviewUseCase(
+        document_storage=LocalTemporaryDocumentStorage(),
+        parse_use_case=get_parse_medical_information_use_case(),
+        review_storage=_document_review_storage,
     )
 
 
@@ -278,3 +308,81 @@ async def parse_medical_information(
         return use_case.execute(document_id=document_id)
     except OcrResultNotAvailableError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+
+
+@router.post(
+    "/{document_id}/review",
+    response_model=DocumentReviewResponse,
+    summary="Guarda una revisión humana del documento",
+    description=(
+        "Persiste un snapshot de la revisión con estados por campo. No aprueba el expediente, "
+        "pero deja listo el contenido para una aprobación posterior."
+    ),
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "model": ErrorResponse,
+            "description": "El documento temporal no existe.",
+        },
+        status.HTTP_409_CONFLICT: {
+            "model": ErrorResponse,
+            "description": "No existe un resultado OCR temporal para el documento.",
+        },
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {
+            "model": ErrorResponse,
+            "description": "La revisión no coincide con la evidencia disponible.",
+        },
+    },
+)
+async def save_document_review(
+    document_id: str,
+    payload: DocumentReviewRequest,
+    use_case: ReviewDocumentUseCase = Depends(get_save_document_review_use_case),
+) -> DocumentReviewResponse:
+    """Guarda la revisión humana sin marcar todavía la aprobación final."""
+    try:
+        return use_case.execute(document_id=document_id, request=payload)
+    except ReviewDocumentNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except OcrResultNotAvailableError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    except ReviewDocumentValidationError as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)) from exc
+
+
+@router.post(
+    "/{document_id}/review/approve",
+    response_model=DocumentReviewResponse,
+    summary="Aprueba definitivamente la revisión humana del documento",
+    description=(
+        "Valida el documento, reusa la evidencia parseada y persiste el snapshot como aprobado. "
+        "La identificación del paciente y el merge clínico vendrán en una fase posterior."
+    ),
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "model": ErrorResponse,
+            "description": "El documento temporal no existe.",
+        },
+        status.HTTP_409_CONFLICT: {
+            "model": ErrorResponse,
+            "description": "No existe un resultado OCR temporal para el documento.",
+        },
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {
+            "model": ErrorResponse,
+            "description": "La revisión aún contiene datos pendientes o no coincide con la evidencia.",
+        },
+    },
+)
+async def approve_document_review(
+    document_id: str,
+    payload: DocumentReviewRequest,
+    use_case: ApproveDocumentReviewUseCase = Depends(get_approve_document_review_use_case),
+) -> DocumentReviewResponse:
+    """Cierra la revisión humana y deja un snapshot aprobado en memoria del backend."""
+    try:
+        return use_case.execute(document_id=document_id, request=payload)
+    except ReviewDocumentNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except OcrResultNotAvailableError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    except ReviewDocumentValidationError as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)) from exc
