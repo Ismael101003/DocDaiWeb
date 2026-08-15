@@ -7,8 +7,8 @@ const PatientGeneralInfo = ({ patient }) => {
           <dt className="col-sm-4 text-body-secondary">Nombre</dt>
           <dd className="col-sm-8">{patient.name}</dd>
           <dt className="col-sm-4 text-body-secondary">Edad</dt>
-          <dd className="col-sm-8">{patient.age} años</dd>
-          <dt className="col-sm-4 text-body-secondary">Diagnóstico general</dt>
+          <dd className="col-sm-8">{patient.age} anos</dd>
+          <dt className="col-sm-4 text-body-secondary">Diagnostico general</dt>
           <dd className="col-sm-8 mb-0">{patient.diagnosis}</dd>
         </dl>
       </div>

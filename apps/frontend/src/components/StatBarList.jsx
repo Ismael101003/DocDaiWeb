@@ -8,7 +8,7 @@ const StatBarList = ({ stats }) => {
             <strong>{stat.value}</strong>
           </div>
           <div className="progress" role="progressbar" aria-label={stat.label} aria-valuemin="0" aria-valuemax="100" aria-valuenow={stat.percent}>
-            <div className={`progress-bar ${stat.className}`} style={{ width: `${stat.percent}%` }} />
+            <div className={`progress-bar ${stat.widthClass} ${stat.className}`} />
           </div>
         </div>
       ))}
