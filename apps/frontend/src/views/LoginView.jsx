@@ -17,15 +17,16 @@ const LoginView = ({ demoUsers, onLogin }) => {
   }
 
   return (
-    <main className="min-vh-100 d-flex align-items-center justify-content-center bg-body-tertiary p-3">
+    <main className="ddw-login">
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-12 col-sm-10 col-md-7 col-lg-5">
-            <section className="card shadow-sm">
+            <section className="ddw-login__panel">
               <div className="card-body p-4 p-md-5">
-                <div className="text-center mb-4">
-                  <h1 className="h3 mb-2">DocDaiWeb</h1>
-                  <p className="text-body-secondary">Accede a tu expediente medico</p>
+                <div className="ddw-login__header">
+                  <span className="ddw-login__mark" aria-hidden="true">Dx</span>
+                  <h1 className="h3 ddw-login__title">DocDaiWeb</h1>
+                  <p className="text-body-secondary mb-0">Accede a tu expediente medico</p>
                 </div>
                 <form className="vstack gap-3" onSubmit={handleSubmit}>
                   <div>
@@ -41,11 +42,11 @@ const LoginView = ({ demoUsers, onLogin }) => {
                     Iniciar sesion
                   </button>
                 </form>
-                <div className="border-top mt-4 pt-3">
-                  <p className="small text-uppercase text-body-secondary mb-2">Usuarios demo</p>
+                <div className="ddw-login__demo">
+                  <p className="ddw-login__demo-label mb-2">Usuarios demo</p>
                   {demoUsers.map((user) => (
-                    <p className="small mb-1" key={user.id}>
-                      <span className="fw-semibold">{user.role === 'doctor' ? 'Doctor' : 'Paciente'}:</span> {user.email} / {user.password}
+                    <p className="ddw-login__demo-row mb-1" key={user.id}>
+                      <span className="ddw-login__demo-role">{user.role === 'doctor' ? 'Doctor' : 'Paciente'}:</span> {user.email} / {user.password}
                     </p>
                   ))}
                 </div>

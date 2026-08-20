@@ -1,0 +1,137 @@
+.ddw-hero {
+  height: 100%;
+  padding: 2rem;
+  border-radius: var(--ddw-radius-lg);
+  background: linear-gradient(135deg, var(--ddw-navy-950), var(--ddw-navy-700));
+  color: #ffffff;
+  box-shadow: var(--ddw-shadow-md);
+}
+
+.ddw-hero__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: var(--ddw-teal-100);
+}
+
+.ddw-hero__title {
+  color: #ffffff;
+}
+
+.ddw-hero__lead {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* Barras de estadisticas */
+.ddw-stat {
+  margin-bottom: 0.9rem;
+}
+
+.ddw-stat__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.35rem;
+}
+
+.ddw-stat__label {
+  color: var(--ddw-text-muted);
+  font-size: 0.9rem;
+}
+
+.ddw-stat__value {
+  font-family: var(--ddw-font-heading);
+  font-weight: 700;
+  color: var(--ddw-navy-950);
+}
+
+.progress {
+  background-color: var(--ddw-surface-muted);
+  border-radius: 999px;
+  height: 8px;
+}
+
+.ddw-stat__bar {
+  border-radius: 999px;
+}
+
+.ddw-stat__bar--primary {
+  background-color: var(--ddw-navy-700);
+}
+
+.ddw-stat__bar--warning {
+  background-color: var(--ddw-warning);
+}
+
+.ddw-stat__bar--success {
+  background-color: var(--ddw-teal-600);
+}
+
+/* Grid de pacientes */
+.ddw-patient-card {
+  height: 100%;
+  border: 1px solid var(--ddw-border);
+  border-radius: var(--ddw-radius-md);
+  background-color: var(--ddw-surface);
+  box-shadow: var(--ddw-shadow-sm);
+  transition: transform var(--ddw-transition-base), box-shadow var(--ddw-transition-base);
+}
+
+.ddw-patient-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--ddw-shadow-md);
+}
+
+.ddw-patient-card__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: var(--ddw-teal-100);
+  color: var(--ddw-navy-700);
+  font-family: var(--ddw-font-heading);
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.dark-theme .ddw-patient-card__avatar {
+  background-color: rgba(20, 184, 166, 0.18);
+  color: var(--ddw-teal-500);
+}
+
+.ddw-patient-card__age {
+  color: var(--ddw-text-muted);
+}
+
+/* Detalle clinico: informacion de solo lectura */
+.ddw-info-list dt {
+  color: var(--ddw-text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ddw-info-list dd {
+  font-size: 1rem;
+  color: var(--ddw-text);
+}
+
+/* Lista de documentos OCR */
+.ddw-ocr-item {
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--ddw-border);
+}
+
+.ddw-ocr-item:last-child {
+  border-bottom: none;
+}
+
+.ddw-ocr-item__name {
+  color: var(--ddw-text);
+}
+
+.ddw-ocr-item__date {
+  color: var(--ddw-text-muted);
+}

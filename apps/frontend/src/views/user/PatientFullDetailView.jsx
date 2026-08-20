@@ -11,28 +11,28 @@ const PatientFullDetailView = ({ patient }) => {
             <div className="card-body">
               <h2 className="h5 mb-3">Ficha medica</h2>
               <dl className="mb-0">
-                <dt className="text-body-secondary">Paciente</dt>
+                <dt>Paciente</dt>
                 <dd>{patient.name}</dd>
-                <dt className="text-body-secondary">Edad</dt>
+                <dt>Edad</dt>
                 <dd>{patient.age} anos</dd>
-                <dt className="text-body-secondary">Tipo de sangre</dt>
+                <dt>Tipo de sangre</dt>
                 <dd>{patient.bloodType}</dd>
-                <dt className="text-body-secondary">Alergias</dt>
+                <dt>Alergias</dt>
                 <dd className="mb-0">{patient.allergies}</dd>
               </dl>
             </div>
           </section>
         </div>
         <div className="col-xl-8">
-          <section className="card shadow-sm">
+          <section className="card shadow-sm ddw-readonly-card">
             <div className="card-body">
               <h2 className="h5 mb-3">Detalle clinico</h2>
               <dl className="mb-0">
-                <dt className="text-body-secondary">Diagnostico actual</dt>
+                <dt>Diagnostico actual</dt>
                 <dd className="mb-0">{patient.diagnosis}</dd>
-                <dt className="text-body-secondary mt-3">Tratamiento indicado</dt>
+                <dt className="mt-3">Tratamiento indicado</dt>
                 <dd className="mb-0">{patient.treatment}</dd>
-                <dt className="text-body-secondary mt-3">Notas clinicas</dt>
+                <dt className="mt-3">Notas clinicas</dt>
                 <dd className="mb-0">{patient.clinicalNotes}</dd>
               </dl>
             </div>

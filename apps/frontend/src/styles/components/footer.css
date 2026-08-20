@@ -1,0 +1,16 @@
+.ddw-footer {
+  border-top: 1px solid var(--ddw-border);
+  background-color: var(--ddw-surface);
+  color: var(--ddw-text-muted);
+  padding: 0.9rem 1.5rem;
+  font-size: 0.85rem;
+}
+
+.ddw-footer__brand {
+  font-weight: 600;
+  color: var(--ddw-navy-700);
+}
+
+.dark-theme .ddw-footer__brand {
+  color: var(--ddw-teal-500);
+}

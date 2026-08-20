@@ -5,10 +5,10 @@ const DoctorWelcomeView = ({ doctorName, stats }) => {
     <section className="container-fluid">
       <div className="row g-4 align-items-stretch">
         <div className="col-xl-5">
-          <div className="h-100 p-4 bg-white border rounded">
-            <p className="text-uppercase small text-body-secondary mb-2">Panel medico</p>
-            <h1 className="display-6 mb-3">Bienvenido, Dr. {doctorName}</h1>
-            <p className="lead text-body-secondary mb-0">Consulta pacientes, documentos OCR y validaciones pendientes desde un flujo simple.</p>
+          <div className="ddw-hero">
+            <p className="ddw-hero__eyebrow mb-2">Panel medico</p>
+            <h1 className="display-6 ddw-hero__title mb-3">Bienvenido, Dr. {doctorName}</h1>
+            <p className="lead ddw-hero__lead mb-0">Consulta pacientes, documentos OCR y validaciones pendientes desde un flujo simple.</p>
           </div>
         </div>
         <div className="col-xl-7">

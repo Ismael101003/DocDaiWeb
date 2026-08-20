@@ -1,0 +1,158 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+}
+
+body {
+  font-family: var(--ddw-font-body);
+  color: var(--ddw-text);
+  background-color: var(--ddw-surface-muted);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--ddw-transition-base), color var(--ddw-transition-base);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.navbar-brand,
+.offcanvas-title {
+  font-family: var(--ddw-font-heading);
+  color: var(--ddw-navy-950);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+a {
+  transition: color var(--ddw-transition-fast);
+}
+
+/* Foco accesible consistente en toda la app */
+a:focus-visible,
+button:focus-visible,
+.form-control:focus,
+.form-select:focus,
+.nav-link:focus-visible {
+  outline: none;
+  box-shadow: var(--ddw-shadow-focus);
+}
+
+/* Tarjetas base reutilizadas por todas las vistas */
+.card {
+  border: 1px solid var(--ddw-border);
+  border-radius: var(--ddw-radius-md);
+  background-color: var(--ddw-surface);
+}
+
+.card.shadow-sm {
+  box-shadow: var(--ddw-shadow-sm) !important;
+}
+
+/* Botones: refuerzo de marca sobre las clases de Bootstrap */
+.btn {
+  border-radius: var(--ddw-radius-sm);
+  font-weight: 500;
+  transition: transform var(--ddw-transition-fast), box-shadow var(--ddw-transition-fast), background-color var(--ddw-transition-fast), border-color var(--ddw-transition-fast);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background-color: var(--ddw-navy-700);
+  border-color: var(--ddw-navy-700);
+}
+
+.btn-primary:hover {
+  background-color: var(--ddw-navy-900);
+  border-color: var(--ddw-navy-900);
+}
+
+.btn-outline-primary {
+  color: var(--ddw-navy-700);
+  border-color: var(--ddw-navy-700);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--ddw-navy-700);
+  border-color: var(--ddw-navy-700);
+}
+
+.btn-success {
+  background-color: var(--ddw-teal-600);
+  border-color: var(--ddw-teal-600);
+}
+
+.btn-success:hover {
+  background-color: #0b7d73;
+  border-color: #0b7d73;
+}
+
+/* Inputs y formularios */
+.form-control,
+.form-select {
+  border-radius: var(--ddw-radius-sm);
+  border-color: var(--ddw-border);
+  background-color: var(--ddw-surface);
+  color: var(--ddw-text);
+  transition: border-color var(--ddw-transition-fast), box-shadow var(--ddw-transition-fast);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--ddw-teal-500);
+}
+
+.form-label {
+  font-weight: 500;
+  color: var(--ddw-text-muted);
+  font-size: 0.875rem;
+}
+
+/* Badges de marca */
+.text-bg-primary {
+  background-color: var(--ddw-navy-700) !important;
+}
+
+.text-bg-success {
+  background-color: var(--ddw-success-bg) !important;
+  color: var(--ddw-success) !important;
+}
+
+.text-bg-warning {
+  background-color: var(--ddw-warning-bg) !important;
+  color: var(--ddw-warning) !important;
+}
+
+.text-bg-info {
+  background-color: var(--ddw-info-bg) !important;
+  color: var(--ddw-info) !important;
+}
+
+/* Utilidad: elementos de solo lectura, sin affordance interactivo */
+.ddw-readonly {
+  cursor: default;
+}
+
+.ddw-readonly * {
+  cursor: default;
+}
+
+/* Utilidad: superficie elevada reutilizable */
+.ddw-surface {
+  background-color: var(--ddw-surface);
+  border: 1px solid var(--ddw-border);
+  border-radius: var(--ddw-radius-md);
+}

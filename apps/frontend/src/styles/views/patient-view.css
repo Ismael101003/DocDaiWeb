@@ -1,0 +1,56 @@
+.ddw-patient-hero {
+  height: 100%;
+  padding: 2rem;
+  border-radius: var(--ddw-radius-lg);
+  background: linear-gradient(135deg, var(--ddw-teal-600), var(--ddw-navy-700));
+  color: #ffffff;
+  box-shadow: var(--ddw-shadow-md);
+}
+
+.ddw-patient-hero__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: var(--ddw-teal-100);
+}
+
+.ddw-patient-hero__title {
+  color: #ffffff;
+}
+
+.ddw-patient-hero__lead {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Fichas de solo lectura: sin hover, cursor estatico */
+.ddw-readonly-card {
+  cursor: default;
+}
+
+.ddw-readonly-card dt {
+  color: var(--ddw-text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ddw-readonly-card dd {
+  color: var(--ddw-text);
+}
+
+/* Tabla de historial de estudios */
+.ddw-studies-table thead th {
+  color: var(--ddw-text-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom-width: 1px;
+}
+
+.ddw-studies-table tbody tr {
+  cursor: default;
+}
+
+.ddw-studies-table tbody tr:hover {
+  background-color: var(--ddw-surface);
+}

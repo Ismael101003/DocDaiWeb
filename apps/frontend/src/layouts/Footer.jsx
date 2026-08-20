@@ -1,7 +1,7 @@
 const Footer = () => {
   return (
-    <footer className="border-top py-3 px-4 text-center text-md-end text-body-secondary">
-      DocDaiWeb
+    <footer className="ddw-footer text-center text-md-end">
+      <span className="ddw-footer__brand">DocDaiWeb</span>
     </footer>
   )
 }

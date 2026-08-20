@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import useDarkMode from './hooks/useDarkMode.js'
 import AppLayout from './layouts/AppLayout.jsx'
 import LoginView from './views/LoginView.jsx'
 import DoctorOCRCorrectionView from './views/doctor/DoctorOCRCorrectionView.jsx'
@@ -29,9 +30,9 @@ const demoUsers = [
 ]
 
 const doctorStats = [
-  { label: 'Pacientes activos', value: 42, percent: 84, widthClass: 'w-100', className: 'bg-primary' },
-  { label: 'OCR por validar', value: 9, percent: 45, widthClass: 'w-50', className: 'bg-warning' },
-  { label: 'Altas recientes', value: 12, percent: 60, widthClass: 'w-75', className: 'bg-success' },
+  { label: 'Pacientes activos', value: 42, percent: 84, className: 'ddw-stat__bar--primary' },
+  { label: 'OCR por validar', value: 9, percent: 45, className: 'ddw-stat__bar--warning' },
+  { label: 'Altas recientes', value: 12, percent: 60, className: 'ddw-stat__bar--success' },
 ]
 
 const patients = [
@@ -81,7 +82,9 @@ const defaultViewByRole = {
 function App() {
   const [currentUser, setCurrentUser] = useState(null)
   const [activeView, setActiveView] = useState(defaultViewByRole.doctor)
+  const { isDark, toggleDarkMode } = useDarkMode()
   const activeRole = currentUser?.role ?? 'doctor'
+  const themeClassName = isDark ? 'dark-theme' : ''
 
   const handleLogin = (event, credentials) => {
     event.preventDefault()
@@ -119,13 +122,27 @@ function App() {
   }
 
   if (!currentUser) {
-    return <LoginView demoUsers={demoUsers} onLogin={handleLogin} />
+    return (
+      <div className={themeClassName}>
+        <LoginView demoUsers={demoUsers} onLogin={handleLogin} />
+      </div>
+    )
   }
 
   return (
-    <AppLayout activeRole={activeRole} activeView={activeView} currentUser={currentUser} onLogout={handleLogout} onNavigate={setActiveView}>
-      {renderView()}
-    </AppLayout>
+    <div className={themeClassName}>
+      <AppLayout
+        activeRole={activeRole}
+        activeView={activeView}
+        currentUser={currentUser}
+        isDark={isDark}
+        onLogout={handleLogout}
+        onNavigate={setActiveView}
+        onToggleDarkMode={toggleDarkMode}
+      >
+        {renderView()}
+      </AppLayout>
+    </div>
   )
 }
 

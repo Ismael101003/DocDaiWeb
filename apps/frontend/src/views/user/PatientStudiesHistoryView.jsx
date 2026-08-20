@@ -5,10 +5,10 @@ const PatientStudiesHistoryView = ({ studies }) => {
         <h1 className="h3 mb-1">Historial de estudios</h1>
         <p className="text-body-secondary mb-0">Registro de estudios realizados y resultados disponibles.</p>
       </div>
-      <section className="card shadow-sm">
+      <section className="card shadow-sm ddw-readonly">
         <div className="card-body">
           <div className="table-responsive">
-            <table className="table table-hover align-middle mb-0">
+            <table className="table align-middle mb-0 ddw-studies-table">
               <thead>
                 <tr>
                   <th scope="col">Fecha</th>

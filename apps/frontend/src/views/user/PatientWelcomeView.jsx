@@ -5,9 +5,9 @@ const PatientWelcomeView = ({ patient, userName }) => {
     <section className="container-fluid">
       <div className="row g-4 align-items-stretch">
         <div className="col-xl-5">
-          <div className="h-100 p-4 bg-white border rounded">
-            <p className="text-uppercase small text-body-secondary mb-2">Panel del paciente</p>
-            <h1 className="display-6 mb-3">Bienvenido, {userName}</h1>
+          <div className="ddw-patient-hero">
+            <p className="ddw-patient-hero__eyebrow mb-2">Panel del paciente</p>
+            <h1 className="display-6 ddw-patient-hero__title mb-3">Bienvenido, {userName}</h1>
             <p className="lead text-body-secondary mb-0">Consulta tu informacion general, diagnostico completo e historial de estudios.</p>
           </div>
         </div>

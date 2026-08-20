@@ -7,26 +7,26 @@ const DoctorOCRCorrectionView = ({ documentName, extractedData }) => {
       </div>
       <form className="row g-4">
         <div className="col-lg-5">
-          <section className="card shadow-sm h-100">
+          <section className="ddw-ocr-viewer ddw-readonly">
             <div className="card-body">
               <h2 className="h5 mb-3">Documento adjunto</h2>
-              <div className="ratio ratio-4x3 bg-secondary-subtle border rounded d-flex align-items-center justify-content-center">
+              <div className="ddw-ocr-viewer__frame">
                 <div className="text-center p-4">
-                  <div className="display-5 text-secondary mb-2">PDF</div>
-                  <p className="mb-0 text-body-secondary">{documentName}</p>
+                  <div className="ddw-ocr-viewer__badge" aria-hidden="true">PDF</div>
+                  <p className="mb-0 ddw-ocr-viewer__filename">{documentName}</p>
                 </div>
               </div>
             </div>
           </section>
         </div>
         <div className="col-lg-7">
-          <section className="card shadow-sm">
+          <section className="ddw-ocr-panel">
             <div className="card-body">
               <h2 className="h5 mb-3">Informacion extraida</h2>
               <div className="row g-3">
                 <div className="col-md-6">
                   <label className="form-label" htmlFor="ocrPatientName">Nombre del paciente</label>
-                  <input className="form-control" id="ocrPatientName" type="text" defaultValue={extractedData.patientName} />
+                  <input className="form-control" id="ocrPatientName" id="ocrPatientName" type="text" defaultValue={extractedData.patientName} />
                 </div>
                 <div className="col-md-6">
                   <label className="form-label" htmlFor="ocrStudyDate">Fecha del estudio</label>
@@ -44,7 +44,7 @@ const DoctorOCRCorrectionView = ({ documentName, extractedData }) => {
                   <label className="form-label" htmlFor="ocrFindings">Hallazgos</label>
                   <textarea className="form-control" id="ocrFindings" rows="5" defaultValue={extractedData.findings} />
                 </div>
-                <div className="col-12 d-flex justify-content-end gap-2">
+                <div className="col-12 ddw-ocr-panel__actions">
                   <button className="btn btn-outline-secondary" type="reset">Restaurar</button>
                   <button className="btn btn-primary" type="submit">Guardar correcciones</button>
                 </div>

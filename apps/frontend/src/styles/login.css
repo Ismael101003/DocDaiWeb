@@ -1,0 +1,66 @@
+.ddw-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, var(--ddw-navy-950) 0%, var(--ddw-navy-700) 55%, var(--ddw-teal-600) 100%);
+  padding: 1.5rem;
+}
+
+.ddw-login__panel {
+  background-color: var(--ddw-surface);
+  border-radius: var(--ddw-radius-lg);
+  box-shadow: var(--ddw-shadow-lift);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  overflow: hidden;
+}
+
+.ddw-login__header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.ddw-login__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--ddw-radius-md);
+  background: linear-gradient(135deg, var(--ddw-navy-700), var(--ddw-teal-600));
+  color: #ffffff;
+  font-family: var(--ddw-font-heading);
+  font-weight: 700;
+  margin-bottom: 0.85rem;
+}
+
+.ddw-login__title {
+  margin-bottom: 0.35rem;
+}
+
+.ddw-login__demo {
+  border-top: 1px solid var(--ddw-border);
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+}
+
+.ddw-login__demo-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ddw-text-muted);
+}
+
+.ddw-login__demo-row {
+  font-size: 0.85rem;
+  color: var(--ddw-text-muted);
+}
+
+.ddw-login__demo-role {
+  color: var(--ddw-navy-700);
+  font-weight: 600;
+}
+
+.dark-theme .ddw-login__demo-role {
+  color: var(--ddw-teal-500);
+}
