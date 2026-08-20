@@ -1,0 +1,60 @@
+/*
+  DocDaiWeb — Design tokens
+  Todas las vistas y componentes deben consumir estas variables, nunca colores literales.
+*/
+
+:root {
+  /* Marca */
+  --ddw-navy-950: #0a2540;
+  --ddw-navy-900: #0f2f4f;
+  --ddw-navy-700: #1a365d;
+  --ddw-navy-500: #2c5282;
+  --ddw-teal-600: #0d9488;
+  --ddw-teal-500: #14b8a6;
+  --ddw-teal-100: #ccfbf1;
+
+  /* Neutros / superficies */
+  --ddw-surface: #ffffff;
+  --ddw-surface-muted: #f8fafc;
+  --ddw-border: #e2e8f0;
+  --ddw-text: #0f172a;
+  --ddw-text-muted: #51617a;
+
+  /* Estados clinicos */
+  --ddw-success: #0d9488;
+  --ddw-success-bg: #ecfdf5;
+  --ddw-warning: #b45309;
+  --ddw-warning-bg: #fffbeb;
+  --ddw-info: #1a365d;
+  --ddw-info-bg: #eff6ff;
+  --ddw-danger: #b91c1c;
+  --ddw-danger-bg: #fef2f2;
+
+  /* Tipografia */
+  --ddw-font-heading: 'Poppins', 'Segoe UI', sans-serif;
+  --ddw-font-body: 'Inter', 'Segoe UI', sans-serif;
+
+  /* Sombras */
+  --ddw-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 1px rgba(15, 23, 42, 0.04);
+  --ddw-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --ddw-shadow-lift: 0 14px 30px rgba(10, 37, 64, 0.14);
+  --ddw-shadow-focus: 0 0 0 3px rgba(13, 148, 136, 0.25);
+
+  /* Radios y transiciones */
+  --ddw-radius-sm: 8px;
+  --ddw-radius-md: 12px;
+  --ddw-radius-lg: 18px;
+  --ddw-transition-fast: 200ms ease;
+  --ddw-transition-base: 260ms ease;
+
+  /* Bootstrap overrides (variables nativas) */
+  --bs-primary: var(--ddw-navy-700);
+  --bs-primary-rgb: 26, 54, 93;
+  --bs-success: var(--ddw-teal-600);
+  --bs-success-rgb: 13, 148, 136;
+  --bs-body-color: var(--ddw-text);
+  --bs-body-bg: var(--ddw-surface-muted);
+  --bs-border-color: var(--ddw-border);
+  --bs-link-color: var(--ddw-teal-600);
+  --bs-link-hover-color: var(--ddw-navy-700);
+}

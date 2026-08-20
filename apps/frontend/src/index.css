@@ -1,0 +1,9 @@
+@import './styles/variables.css';
+@import './styles/global.css';
+@import './styles/theme-dark.css';
+@import './styles/components/sidebar.css';
+@import './styles/components/footer.css';
+@import './styles/login.css';
+@import './styles/views/doctor-dashboard.css';
+@import './styles/views/ocr-editor.css';
+@import './styles/views/patient-view.css';

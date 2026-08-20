@@ -1,0 +1,55 @@
+.ddw-ocr-viewer {
+  height: 100%;
+  border: 1px solid var(--ddw-border);
+  border-radius: var(--ddw-radius-md);
+  background-color: var(--ddw-surface);
+  box-shadow: var(--ddw-shadow-sm);
+}
+
+.ddw-ocr-viewer__frame {
+  aspect-ratio: 4 / 3;
+  background-color: var(--ddw-surface-muted);
+  border: 1px dashed var(--ddw-border);
+  border-radius: var(--ddw-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+
+.ddw-ocr-viewer__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 0.75rem;
+  border-radius: var(--ddw-radius-sm);
+  background-color: var(--ddw-navy-700);
+  color: #ffffff;
+  font-family: var(--ddw-font-heading);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.ddw-ocr-viewer__filename {
+  color: var(--ddw-text-muted);
+}
+
+.ddw-ocr-panel {
+  border: 1px solid var(--ddw-border);
+  border-radius: var(--ddw-radius-md);
+  background-color: var(--ddw-surface);
+  box-shadow: var(--ddw-shadow-sm);
+}
+
+.ddw-ocr-panel .form-control:focus {
+  border-color: var(--ddw-teal-500);
+  box-shadow: var(--ddw-shadow-focus);
+}
+
+.ddw-ocr-panel__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

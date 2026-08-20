@@ -1,0 +1,122 @@
+/*
+  DocDaiWeb — Dark Mode
+  Se activa agregando la clase `.dark-theme` al contenedor raiz de la app.
+  Redefine solo las variables de superficie/texto; el acento turquesa y los
+  estados clinicos permanecen legibles (WCAG AA) sobre los nuevos fondos.
+*/
+
+.dark-theme {
+  --ddw-surface: #1e293b;
+  --ddw-surface-muted: #0f172a;
+  --ddw-border: #334155;
+  --ddw-text: #e2e8f0;
+  --ddw-text-muted: #94a3b8;
+
+  --ddw-navy-950: #e2e8f0;
+
+  --ddw-success-bg: rgba(13, 148, 136, 0.16);
+  --ddw-warning-bg: rgba(217, 119, 6, 0.16);
+  --ddw-info-bg: rgba(59, 130, 246, 0.16);
+  --ddw-danger-bg: rgba(220, 38, 38, 0.18);
+
+  --ddw-info: #93c5fd;
+  --ddw-warning: #fbbf24;
+  --ddw-success: #2dd4bf;
+
+  --bs-body-color: var(--ddw-text);
+  --bs-body-bg: var(--ddw-surface-muted);
+  --bs-border-color: var(--ddw-border);
+
+  background-color: var(--ddw-surface-muted);
+  color: var(--ddw-text);
+}
+
+.dark-theme h1,
+.dark-theme h2,
+.dark-theme h3,
+.dark-theme h4,
+.dark-theme h5,
+.dark-theme h6,
+.dark-theme .navbar-brand,
+.dark-theme .offcanvas-title {
+  color: #f1f5f9;
+}
+
+.dark-theme .bg-white,
+.dark-theme .bg-body-tertiary,
+.dark-theme .text-bg-light {
+  background-color: var(--ddw-surface) !important;
+  color: var(--ddw-text) !important;
+}
+
+.dark-theme .card {
+  background-color: var(--ddw-surface);
+  border-color: var(--ddw-border);
+}
+
+.dark-theme .border,
+.dark-theme .border-top,
+.dark-theme .border-bottom,
+.dark-theme .border-end,
+.dark-theme .border-start {
+  border-color: var(--ddw-border) !important;
+}
+
+.dark-theme .text-body-secondary,
+.dark-theme .text-secondary-emphasis {
+  color: var(--ddw-text-muted) !important;
+}
+
+.dark-theme .form-control,
+.dark-theme .form-select {
+  background-color: var(--ddw-surface-muted);
+  border-color: var(--ddw-border);
+  color: var(--ddw-text);
+}
+
+.dark-theme .form-control::placeholder {
+  color: var(--ddw-text-muted);
+}
+
+.dark-theme .bg-secondary-subtle {
+  background-color: rgba(148, 163, 184, 0.16) !important;
+}
+
+.dark-theme .table {
+  color: var(--ddw-text);
+  --bs-table-bg: var(--ddw-surface);
+  --bs-table-hover-bg: rgba(20, 184, 166, 0.08);
+  --bs-table-color: var(--ddw-text);
+  --bs-table-border-color: var(--ddw-border);
+}
+
+.dark-theme .alert-danger {
+  background-color: var(--ddw-danger-bg);
+  border-color: rgba(220, 38, 38, 0.35);
+  color: #fca5a5;
+}
+
+.dark-theme .btn-outline-secondary {
+  color: var(--ddw-text-muted);
+  border-color: var(--ddw-border);
+}
+
+.dark-theme .btn-outline-secondary:hover {
+  background-color: var(--ddw-border);
+  color: var(--ddw-text);
+}
+
+.dark-theme .btn-outline-danger {
+  color: #fca5a5;
+  border-color: rgba(220, 38, 38, 0.4);
+}
+
+.dark-theme .btn-outline-danger:hover {
+  background-color: rgba(220, 38, 38, 0.16);
+  color: #fca5a5;
+  border-color: rgba(220, 38, 38, 0.4);
+}
+
+.dark-theme .btn-close {
+  filter: invert(1) grayscale(100);
+}

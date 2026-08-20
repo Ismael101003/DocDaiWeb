@@ -1,9 +1,5 @@
-:root {
-  --docdai-ink: #102130;
-  --docdai-accent: #0f766e;
-  --docdai-accent-soft: rgba(15, 118, 110, 0.12);
-  --docdai-border: #d7e2ea;
-  --docdai-surface: rgba(255, 255, 255, 0.92);
+* {
+  box-sizing: border-box;
 }
 
 .docdai-process-hero { background: #12324d; color: white; border-radius: 1.25rem; padding: clamp(1.5rem, 4vw, 3rem); display: flex; gap: 1.5rem; justify-content: space-between; align-items: start; }
@@ -42,80 +38,156 @@
 html,
 body,
 #root {
-  min-height: 100%;
-}
-
-body {
-  color: var(--docdai-ink);
-  background:
-    radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 28%),
-    linear-gradient(180deg, #f4f8fb 0%, #eef4f8 100%);
-}
-
-a {
-  text-decoration: none;
-}
-
-.docdai-shell {
   min-height: 100vh;
 }
 
-.docdai-sidebar {
-  background: linear-gradient(180deg, #0f2a43 0%, #12324d 55%, #0f172a 100%);
-  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.08);
+body {
+  font-family: var(--ddw-font-body);
+  color: var(--ddw-text);
+  background-color: var(--ddw-surface-muted);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--ddw-transition-base), color var(--ddw-transition-base);
 }
 
-.docdai-topbar {
-  backdrop-filter: blur(16px);
-  background: rgba(255, 255, 255, 0.86);
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.navbar-brand,
+.offcanvas-title {
+  font-family: var(--ddw-font-heading);
+  color: var(--ddw-navy-950);
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
-.docdai-surface {
-  background: var(--docdai-surface);
-  border: 1px solid rgba(16, 33, 48, 0.08);
-  box-shadow: 0 18px 40px rgba(16, 33, 48, 0.08);
+a {
+  transition: color var(--ddw-transition-fast);
 }
 
-.docdai-sidebar-link {
-  color: rgba(255, 255, 255, 0.74);
-  border-radius: 1rem;
-  padding: 0.8rem 1rem;
-  transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+/* Foco accesible consistente en toda la app */
+a:focus-visible,
+button:focus-visible,
+.form-control:focus,
+.form-select:focus,
+.nav-link:focus-visible {
+  outline: none;
+  box-shadow: var(--ddw-shadow-focus);
 }
 
-.docdai-sidebar-link:hover,
-.docdai-sidebar-link:focus,
-.docdai-sidebar-link.active {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.12);
-  transform: translateX(2px);
+/* Tarjetas base reutilizadas por todas las vistas */
+.card {
+  border: 1px solid var(--ddw-border);
+  border-radius: var(--ddw-radius-md);
+  background-color: var(--ddw-surface);
 }
 
-.docdai-card-accent {
-  background: linear-gradient(135deg, rgba(15, 118, 110, 0.14), rgba(56, 189, 248, 0.08));
+.card.shadow-sm {
+  box-shadow: var(--ddw-shadow-sm) !important;
 }
 
-.docdai-timeline-dot {
-  width: 0.9rem;
-  height: 0.9rem;
-  border-radius: 999px;
-  margin-top: 0.35rem;
-  flex: 0 0 auto;
-  background: var(--docdai-accent);
-  box-shadow: 0 0 0 6px var(--docdai-accent-soft);
+/* Botones: refuerzo de marca sobre las clases de Bootstrap */
+.btn {
+  border-radius: var(--ddw-radius-sm);
+  font-weight: 500;
+  transition: transform var(--ddw-transition-fast), box-shadow var(--ddw-transition-fast), background-color var(--ddw-transition-fast), border-color var(--ddw-transition-fast);
 }
 
-.docdai-timeline-line {
-  width: 1px;
-  background: linear-gradient(180deg, rgba(15, 118, 110, 0.42), rgba(148, 163, 184, 0.18));
+.btn:hover {
+  transform: translateY(-1px);
 }
 
-.docdai-muted-copy {
-  color: #5b6978;
+.btn:active {
+  transform: translateY(0);
 }
 
-.docdai-section-title {
-  letter-spacing: 0.02em;
+.btn-primary {
+  background-color: var(--ddw-navy-700);
+  border-color: var(--ddw-navy-700);
+}
+
+.btn-primary:hover {
+  background-color: var(--ddw-navy-900);
+  border-color: var(--ddw-navy-900);
+}
+
+.btn-outline-primary {
+  color: var(--ddw-navy-700);
+  border-color: var(--ddw-navy-700);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--ddw-navy-700);
+  border-color: var(--ddw-navy-700);
+}
+
+.btn-success {
+  background-color: var(--ddw-teal-600);
+  border-color: var(--ddw-teal-600);
+}
+
+.btn-success:hover {
+  background-color: #0b7d73;
+  border-color: #0b7d73;
+}
+
+/* Inputs y formularios */
+.form-control,
+.form-select {
+  border-radius: var(--ddw-radius-sm);
+  border-color: var(--ddw-border);
+  background-color: var(--ddw-surface);
+  color: var(--ddw-text);
+  transition: border-color var(--ddw-transition-fast), box-shadow var(--ddw-transition-fast);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--ddw-teal-500);
+}
+
+.form-label {
+  font-weight: 500;
+  color: var(--ddw-text-muted);
+  font-size: 0.875rem;
+}
+
+/* Badges de marca */
+.text-bg-primary {
+  background-color: var(--ddw-navy-700) !important;
+}
+
+.text-bg-success {
+  background-color: var(--ddw-success-bg) !important;
+  color: var(--ddw-success) !important;
+}
+
+.text-bg-warning {
+  background-color: var(--ddw-warning-bg) !important;
+  color: var(--ddw-warning) !important;
+}
+
+.text-bg-info {
+  background-color: var(--ddw-info-bg) !important;
+  color: var(--ddw-info) !important;
+}
+
+/* Utilidad: elementos de solo lectura, sin affordance interactivo */
+.ddw-readonly {
+  cursor: default;
+}
+
+.ddw-readonly * {
+  cursor: default;
+}
+
+/* Utilidad: superficie elevada reutilizable */
+.ddw-surface {
+  background-color: var(--ddw-surface);
+  border: 1px solid var(--ddw-border);
+  border-radius: var(--ddw-radius-md);
 }
 
 .docdai-ocr-review { display: grid; gap: 1rem; padding-bottom: 5.5rem; }
