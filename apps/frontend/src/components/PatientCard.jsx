@@ -6,9 +6,9 @@ const PatientCard = ({ patient, onViewPatient }) => {
           <span className="fs-3 text-secondary-emphasis lh-1">{patient.initials}</span>
         </div>
         <h3 className="h5 mb-1">{patient.name}</h3>
-        <p className="text-body-secondary mb-3">{patient.age} anos</p>
+        <p className="text-body-secondary mb-3">{patient.age ?? 'Edad no registrada'}</p>
         <button className="btn btn-outline-primary mt-auto" type="button" onClick={() => onViewPatient(patient.id)}>
-          Ver paciente
+          Ver expediente
         </button>
       </div>
     </article>

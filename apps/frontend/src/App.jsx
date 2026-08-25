@@ -1,8 +1,13 @@
 import { useState } from 'react'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { DocumentsProvider } from './app/providers/DocumentsProvider.tsx'
+import { DocumentsPage } from './features/doctor/pages/DocumentsPage.tsx'
+import { DocumentUploadPage } from './features/doctor/pages/DocumentUploadPage.tsx'
+import { OcrReviewPage } from './features/ocr-layout/pages/OcrReviewPage.tsx'
+import { PatientRecordPage } from './features/doctor/pages/PatientRecordPage.tsx'
 import useDarkMode from './hooks/useDarkMode.js'
 import AppLayout from './layouts/AppLayout.jsx'
 import LoginView from './views/LoginView.jsx'
-import DoctorOCRCorrectionView from './views/doctor/DoctorOCRCorrectionView.jsx'
 import DoctorPatientDetailView from './views/doctor/DoctorPatientDetailView.jsx'
 import DoctorPatientsGridView from './views/doctor/DoctorPatientsGridView.jsx'
 import DoctorWelcomeView from './views/doctor/DoctorWelcomeView.jsx'
@@ -66,23 +71,11 @@ const patientStudies = [
   { id: 'study-003', date: '2 agosto 2026', type: 'Quimica sanguinea', result: 'Glucosa en observacion para seguimiento.' },
 ]
 
-const extractedData = {
-  patientName: selectedPatient.name,
-  studyDate: '2026-08-10',
-  studyType: 'Biometria hematica',
-  doctor: 'Dr. Alvarez',
-  findings: 'Texto extraido por OCR pendiente de validacion humana.',
-}
-
-const defaultViewByRole = {
-  doctor: 'doctor-welcome',
-  patient: 'patient-welcome',
-}
-
 function App() {
   const [currentUser, setCurrentUser] = useState(null)
-  const [activeView, setActiveView] = useState(defaultViewByRole.doctor)
   const { isDark, toggleDarkMode } = useDarkMode()
+  const location = useLocation()
+  const navigate = useNavigate()
   const activeRole = currentUser?.role ?? 'doctor'
   const themeClassName = isDark ? 'dark-theme' : ''
 
@@ -98,28 +91,20 @@ function App() {
     }
 
     setCurrentUser(foundUser)
-    setActiveView(defaultViewByRole[foundUser.role])
+    navigate(foundUser.role === 'doctor' ? '/doctor' : '/patient')
     return true
   }
 
   const handleLogout = () => {
     setCurrentUser(null)
-    setActiveView(defaultViewByRole.doctor)
+    navigate('/login')
   }
 
-  const renderView = () => {
-    const views = {
-      'doctor-welcome': <DoctorWelcomeView doctorName={currentUser.name} stats={doctorStats} />,
-      'doctor-patients': <DoctorPatientsGridView patients={patients} onViewPatient={() => setActiveView('doctor-detail')} />,
-      'doctor-detail': <DoctorPatientDetailView documents={ocrDocuments} patient={selectedPatient} onScanDocument={() => setActiveView('doctor-ocr')} />,
-      'doctor-ocr': <DoctorOCRCorrectionView documentName="biometria-hematica.pdf" extractedData={extractedData} />,
-      'patient-welcome': <PatientWelcomeView patient={selectedPatient} userName={currentUser.name} />,
-      'patient-full-detail': <PatientFullDetailView patient={selectedPatient} />,
-      'patient-studies': <PatientStudiesHistoryView studies={patientStudies} />,
-    }
-
-    return views[activeView] ?? views[defaultViewByRole[activeRole]]
+  const routeByView = {
+    'doctor-welcome': '/doctor', 'doctor-patients': '/doctor/patients', 'doctor-detail': '/doctor/patient-detail', 'doctor-documents': '/doctor/documents',
+    'patient-welcome': '/patient', 'patient-full-detail': '/patient/full-detail', 'patient-studies': '/patient/studies',
   }
+  const activeView = Object.entries(routeByView).find(([, path]) => path === location.pathname)?.[0] ?? (activeRole === 'doctor' ? 'doctor-welcome' : 'patient-welcome')
 
   if (!currentUser) {
     return (
@@ -131,17 +116,24 @@ function App() {
 
   return (
     <div className={themeClassName}>
-      <AppLayout
-        activeRole={activeRole}
-        activeView={activeView}
-        currentUser={currentUser}
-        isDark={isDark}
-        onLogout={handleLogout}
-        onNavigate={setActiveView}
-        onToggleDarkMode={toggleDarkMode}
-      >
-        {renderView()}
-      </AppLayout>
+      <DocumentsProvider>
+        <AppLayout activeRole={activeRole} activeView={activeView} currentUser={currentUser} isDark={isDark} onLogout={handleLogout} onNavigate={(view) => navigate(routeByView[view])} onToggleDarkMode={toggleDarkMode}>
+          <Routes>
+            <Route path="/doctor" element={<DoctorWelcomeView doctorName={currentUser.name} stats={doctorStats} onScanDocument={() => navigate('/doctor/uploads')} onViewPatients={() => navigate('/doctor/patients')} />} />
+            <Route path="/doctor/patients" element={<DoctorPatientsGridView onViewPatient={(patientId) => navigate(`/doctor/patients/${patientId}`)} />} />
+            <Route path="/doctor/patients/:patientId" element={<PatientRecordPage />} />
+            <Route path="/doctor/patients/:patientId/upload" element={<DocumentUploadPage />} />
+            <Route path="/doctor/patient-detail" element={<DoctorPatientDetailView documents={ocrDocuments} patient={selectedPatient} onScanDocument={() => navigate('/doctor/uploads')} />} />
+            <Route path="/doctor/uploads" element={<DocumentUploadPage />} />
+            <Route path="/doctor/documents" element={<DocumentsPage />} />
+            <Route path="/doctor/documents/:documentId/review" element={<OcrReviewPage />} />
+            <Route path="/patient" element={<PatientWelcomeView patient={selectedPatient} userName={currentUser.name} />} />
+            <Route path="/patient/full-detail" element={<PatientFullDetailView patient={selectedPatient} />} />
+            <Route path="/patient/studies" element={<PatientStudiesHistoryView studies={patientStudies} />} />
+            <Route path="*" element={<Navigate to={activeRole === 'doctor' ? '/doctor' : '/patient'} replace />} />
+          </Routes>
+        </AppLayout>
+      </DocumentsProvider>
     </div>
   )
 }

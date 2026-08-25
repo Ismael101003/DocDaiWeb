@@ -3,7 +3,7 @@ const navigationByRole = {
     { key: 'doctor-welcome', label: 'Inicio', icon: 'IN' },
     { key: 'doctor-patients', label: 'Pacientes', icon: 'PA' },
     { key: 'doctor-detail', label: 'Detalle clinico', icon: 'DC' },
-    { key: 'doctor-ocr', label: 'Correccion OCR', icon: 'OC' },
+    { key: 'doctor-documents', label: 'Documentos', icon: 'DC' },
   ],
   patient: [
     { key: 'patient-welcome', label: 'Inicio', icon: 'IN' },

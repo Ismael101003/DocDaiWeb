@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useDocuments } from '@/app/providers/DocumentsProvider';
 import { extractOCR, parseMedicalInformation, prepareDocument, uploadDocument } from '@/services/documents';
-import type { PipelineStep, ProcessingDocument, ProcessingLogEvent } from '@/types/documents';
+import type { PipelineStep, ProcessingLogEvent } from '@/types/documents';
 
 const friendlyError: Record<PipelineStep, string> = {
   upload: 'No fue posible cargar el documento. Verifica el formato e inténtalo de nuevo.',
@@ -12,7 +12,7 @@ const friendlyError: Record<PipelineStep, string> = {
 };
 const now = () => new Date().toISOString();
 
-export function useDocumentProcessing() {
+export function useDocumentProcessing(targetPatientId?: string) {
   const { activeDocument, addDocument, updateDocument } = useDocuments();
   const [events, setEvents] = useState<ProcessingLogEvent[]>([]);
   const [processingStep, setProcessingStep] = useState<PipelineStep | null>(null);
@@ -32,7 +32,7 @@ export function useDocumentProcessing() {
         setRetryFile(sourceFile);
         setProcessingStep('upload'); log('processing', 'Subiendo documento…');
         const uploaded = await uploadDocument(sourceFile);
-        document = { id: uploaded.document_id, filename: uploaded.filename, size: sourceFile.size, createdAt: now(), stage: 'stored', previewUrl: URL.createObjectURL(sourceFile) };
+        document = { id: uploaded.document_id, filename: uploaded.filename, size: sourceFile.size, createdAt: now(), stage: 'stored', previewUrl: URL.createObjectURL(sourceFile), targetPatientId };
         addDocument(document); log('success', `Documento cargado correctamente · ${uploaded.filename} · ID ${uploaded.document_id}`);
         setCompletedThrough('upload'); setRetryFile(null);
       }
@@ -61,9 +61,9 @@ export function useDocumentProcessing() {
         setCompletedThrough('parse');
       }
       setProcessingStep(null);
-    } catch (_cause) {
+    } catch {
       const message = friendlyError[step]; setError(message); setFailedStep(step); setProcessingStep(null); log('error', message);
     }
-  }, [activeDocument, addDocument, log, retryFile, updateDocument]);
+  }, [activeDocument, addDocument, log, retryFile, targetPatientId, updateDocument]);
   return { events, processingStep, completedThrough, failedStep, error, perform };
 }

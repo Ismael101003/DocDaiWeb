@@ -1,6 +1,6 @@
 import StatBarList from '../../components/StatBarList.jsx'
 
-const DoctorWelcomeView = ({ doctorName, stats }) => {
+const DoctorWelcomeView = ({ doctorName, stats, onScanDocument, onViewPatients }) => {
   return (
     <section className="container-fluid">
       <div className="row g-4 align-items-stretch">
@@ -8,7 +8,8 @@ const DoctorWelcomeView = ({ doctorName, stats }) => {
           <div className="ddw-hero">
             <p className="ddw-hero__eyebrow mb-2">Panel medico</p>
             <h1 className="display-6 ddw-hero__title mb-3">Bienvenido, Dr. {doctorName}</h1>
-            <p className="lead ddw-hero__lead mb-0">Consulta pacientes, documentos OCR y validaciones pendientes desde un flujo simple.</p>
+            <p className="lead ddw-hero__lead mb-4">Inicia una digitalización o consulta expedientes clínicos.</p>
+            <div className="d-flex flex-wrap gap-2"><button type="button" className="btn btn-light btn-lg" onClick={onScanDocument}>+ Escanear / subir documento</button><button type="button" className="btn btn-outline-light" onClick={onViewPatients}>Ver pacientes</button></div>
           </div>
         </div>
         <div className="col-xl-7">

@@ -205,3 +205,95 @@ button:focus-visible,
 .docdai-review-actions { position: fixed; right: clamp(1rem, 4vw, 4rem); bottom: 1rem; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .8rem 1rem; background: rgba(255,255,255,.96); border: 1px solid #cbd9df; border-radius: .9rem; box-shadow: 0 12px 34px rgba(16,33,48,.16); }.docdai-review-actions span { display: grid; }.docdai-review-actions small { color: #71808c; font-size: .72rem; }.docdai-review-actions .btn:disabled { cursor: not-allowed; }
 @media (max-width: 1199px) { .docdai-review-grid { grid-template-columns: 9rem minmax(0,1fr); }.docdai-extraction-panel { grid-column: 1 / -1; max-height: none; }.docdai-extraction-panel .d-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 767px) { .docdai-review-heading, .docdai-review-actions { align-items: stretch; flex-direction: column; }.docdai-review-grid { grid-template-columns: 1fr; }.docdai-page-thumbnails { display: flex; max-height: none; overflow-x: auto; }.docdai-page-thumbnails button { min-width: 7.5rem; }.docdai-review-canvas { min-height: 22rem; }.docdai-extraction-panel .d-grid { grid-template-columns: 1fr; }.docdai-review-actions { left: 1rem; right: 1rem; }.docdai-review-actions > div { width: 100%; }.docdai-review-actions .btn { flex: 1; } }
+
+/* Revisión OCR: todas las superficies usan tokens para conservar contraste en ambos temas. */
+.docdai-review-viewer,
+.docdai-extraction-panel,
+.docdai-evidence-panel,
+.docdai-ocr-details,
+.docdai-review-actions {
+  background: var(--ddw-surface);
+  border-color: var(--ddw-border);
+  color: var(--ddw-text);
+}
+
+.docdai-extraction-field {
+  background: var(--ddw-surface);
+  border-color: var(--ddw-border);
+  color: var(--ddw-text);
+}
+
+.docdai-extraction-field.is-selected {
+  background: var(--ddw-info-bg);
+  border-color: var(--ddw-teal-500);
+}
+
+.docdai-extraction-field small,
+.docdai-evidence-source small,
+.docdai-original-value small,
+.docdai-review-actions small,
+.docdai-ocr-details summary {
+  color: var(--ddw-text-muted);
+}
+
+.docdai-extraction-field strong,
+.docdai-evidence-panel h2,
+.docdai-evidence-source p,
+.docdai-original-value strong,
+.docdai-ocr-details pre {
+  color: var(--ddw-text);
+}
+
+.docdai-evidence-source,
+.docdai-original-value {
+  background: var(--ddw-surface-muted);
+  border-left-color: var(--ddw-teal-500);
+}
+
+/* Actividad de carga y línea de tiempo: sin colores fijos que rompan el tema oscuro. */
+.docdai-processing-stepper li {
+  color: var(--ddw-text-muted);
+}
+
+.docdai-processing-stepper li:not(:last-child)::after {
+  background: var(--ddw-border);
+}
+
+.docdai-processing-stepper li > span {
+  border-color: var(--ddw-border);
+  color: var(--ddw-text-muted);
+}
+
+.docdai-processing-stepper .is-completed {
+  color: var(--ddw-success);
+}
+
+.docdai-processing-stepper .is-completed > span {
+  border-color: var(--ddw-success);
+  background: var(--ddw-success);
+}
+
+.docdai-processing-stepper .is-processing {
+  color: var(--ddw-info);
+}
+
+.docdai-processing-stepper .is-processing > span {
+  color: var(--ddw-info);
+  border-color: var(--ddw-info);
+  background: var(--ddw-info-bg);
+}
+
+.docdai-processing-log {
+  background: var(--ddw-surface);
+  border-color: var(--ddw-border);
+  color: var(--ddw-text);
+}
+
+.docdai-log-row {
+  border-bottom-color: var(--ddw-border);
+  color: var(--ddw-text);
+}
+
+.docdai-log-row time {
+  color: var(--ddw-text-muted);
+}

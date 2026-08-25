@@ -12,9 +12,24 @@ export interface MedicalInformationResponse {
   patient: { name: string | null; age: number | null } | null;
   diagnoses: string[]; medications: Medication[]; dates: string[]; doctor: string | null; institution: string | null; evidence: Evidence[];
 }
+export interface ClinicalPatient {
+  id: string; name: string | null; age: number | null; date_of_birth: string | null;
+  curp: string | null; nss: string | null; created_at: string; updated_at: string;
+}
+export interface PatientMedicalRecord {
+  patient_id: string; diagnoses: string[]; medications: Medication[]; dates: string[];
+  doctors: string[]; institutions: string[]; documents: string[]; updated_at: string | null;
+}
+export interface FinalizeDocumentResponse {
+  document_id: string; action: 'created' | 'updated' | 'ambiguous_match';
+  status: 'finalized' | 'ambiguous_match'; match_identifier: string | null;
+  patient: ClinicalPatient | null; record: PatientMedicalRecord | null;
+}
+export interface PatientListItem { id: string; full_name: string; }
+export interface PatientListResponse { items: PatientListItem[]; }
 export interface ProcessingDocument {
   id: string; filename: string; size: number; createdAt: string; stage: DocumentStage;
-  pages?: number; preparedImages?: string[]; ocr?: OCRResponse; parsed?: MedicalInformationResponse; previewUrl?: string;
+  pages?: number; preparedImages?: string[]; ocr?: OCRResponse; parsed?: MedicalInformationResponse; previewUrl?: string; targetPatientId?: string; patientId?: string; patientName?: string;
 }
 export type PipelineStep = 'upload' | 'prepare' | 'ocr' | 'parse' | 'review';
 export type PipelineStepState = 'pending' | 'processing' | 'completed' | 'error';
