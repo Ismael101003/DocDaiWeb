@@ -56,13 +56,16 @@ export function useDocumentProcessing(targetPatientId?: string) {
         step = 'parse';
         setProcessingStep('parse'); log('processing', 'Extrayendo información estructurada…');
         const parsed = await parseMedicalInformation(document.id);
+        document = { ...document, stage: 'pending_human_review', parsed };
         updateDocument(document.id, { stage: 'pending_human_review', parsed });
         log('success', 'Información estructurada obtenida'); log('review', 'Pendiente de revisión humana');
         setCompletedThrough('parse');
       }
       setProcessingStep(null);
+      return document.id;
     } catch {
       const message = friendlyError[step]; setError(message); setFailedStep(step); setProcessingStep(null); log('error', message);
+      return null;
     }
   }, [activeDocument, addDocument, log, retryFile, targetPatientId, updateDocument]);
   return { events, processingStep, completedThrough, failedStep, error, perform };

@@ -297,3 +297,17 @@ button:focus-visible,
 .docdai-log-row time {
   color: var(--ddw-text-muted);
 }
+
+/* Agrupación clínica: evita exponer rutas técnicas del parser al profesional. */
+.docdai-field-groups { display: grid; gap: 1rem; }
+.docdai-field-group { display: grid; gap: .55rem; }
+.docdai-field-group > h3 { color: var(--ddw-text-muted); font-size: .72rem; letter-spacing: .09em; margin: 0; text-transform: uppercase; }
+.docdai-medication-card { display: grid; gap: .65rem; padding: .75rem; background: var(--ddw-surface-muted); border: 1px solid var(--ddw-border); border-radius: .8rem; }
+.docdai-medication-card header { display: grid; gap: .1rem; }
+.docdai-medication-card header span { color: var(--ddw-text-muted); font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.docdai-medication-card header strong { color: var(--ddw-text); font-size: .9rem; }
+
+/* Backdrop propio para modales pequeños sin depender de recargas o JS de Bootstrap. */
+.ddw-modal-backdrop { align-items: center; background: rgba(2, 6, 23, .58); display: flex; inset: 0; justify-content: center; padding: 1rem; position: fixed; z-index: 1080; }
+.ddw-modal { background: var(--ddw-surface-raised); border-color: var(--ddw-border); color: var(--ddw-text); max-height: calc(100vh - 2rem); max-width: 38rem; overflow: auto; width: 100%; }
+.ddw-modal .card-footer { background: transparent; border-color: var(--ddw-border); }

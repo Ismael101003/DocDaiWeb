@@ -23,7 +23,7 @@ class InMemoryPatientRepository:
     def get(self, *, patient_id: UUID) -> ClinicalPatient | None:
         with self._lock: return self._patients.get(patient_id)
     def list(self) -> list[ClinicalPatient]:
-        with self._lock: return list(self._patients.values())
+        with self._lock: return [patient for patient in self._patients.values() if patient.is_active]
     def find_by_curp(self, *, curp: str) -> list[ClinicalPatient]:
         return [item for item in self.list() if item.curp == curp]
     def find_by_nss(self, *, nss: str) -> list[ClinicalPatient]:

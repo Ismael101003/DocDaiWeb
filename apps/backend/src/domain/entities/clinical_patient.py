@@ -15,3 +15,4 @@ class ClinicalPatient:
     nss: str | None
     created_at: datetime
     updated_at: datetime
+    is_active: bool = True

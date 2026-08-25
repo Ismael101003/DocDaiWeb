@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { listPatients } from '../../services/documents.ts'
 import PatientCard from '../../components/PatientCard.jsx'
+import { PatientActions } from '../../components/PatientActions.tsx'
 
 const DoctorPatientsGridView = ({ onViewPatient }) => {
   const [state, setState] = useState({ kind: 'loading', patients: [], message: '' })
   useEffect(() => {
     let active = true
     listPatients().then(({ items }) => {
-      if (active) setState({ kind: 'ready', patients: items.map((patient) => ({ id: patient.id, name: patient.full_name, initials: patient.full_name.split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase(), age: null })), message: '' })
+      if (active) setState({ kind: 'ready', patients: items.map((patient) => ({ ...patient, name: patient.full_name, initials: patient.full_name.split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase() })), message: '' })
     }).catch((error) => active && setState({ kind: 'error', patients: [], message: error instanceof Error ? error.message : 'No fue posible cargar los pacientes.' }))
     return () => { active = false }
   }, [])
@@ -26,7 +27,7 @@ const DoctorPatientsGridView = ({ onViewPatient }) => {
       <div className="row g-4">
         {state.patients.map((patient) => (
           <div className="col-sm-6 col-md-4 col-xl-3" key={patient.id}>
-            <PatientCard patient={patient} onViewPatient={onViewPatient} />
+            <PatientCard patient={patient} onViewPatient={onViewPatient} actions={<PatientActions patient={patient} onUpdated={(updated) => setState((current) => ({ ...current, patients: current.patients.map((item) => item.id === updated.id ? { ...item, ...updated, full_name: updated.name ?? 'Sin nombre', name: updated.name ?? 'Sin nombre', initials: (updated.name ?? 'SN').split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase() } : item) }))} onDeactivated={(patientId) => setState((current) => ({ ...current, patients: current.patients.filter((item) => item.id !== patientId) }))} />} />
           </div>
         ))}
       </div>

@@ -1,4 +1,4 @@
-const PatientCard = ({ patient, onViewPatient }) => {
+const PatientCard = ({ patient, onViewPatient, actions }) => {
   return (
     <article className="card h-100 shadow-sm">
       <div className="card-body d-flex flex-column align-items-center text-center">
@@ -10,6 +10,7 @@ const PatientCard = ({ patient, onViewPatient }) => {
         <button className="btn btn-outline-primary mt-auto" type="button" onClick={() => onViewPatient(patient.id)}>
           Ver expediente
         </button>
+        {actions ? <div className="mt-2">{actions}</div> : null}
       </div>
     </article>
   )

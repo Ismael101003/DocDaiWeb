@@ -40,14 +40,26 @@ export function OcrReviewPage() {
   };
   const handleReviewUpdate = (patch: { value?: string; status?: 'pending_review' | 'approved' | 'corrected' | 'rejected' }) => {
     if (!review.selected) return;
-    const wasPending = review.selected.status === 'pending_review';
-    const isResolved = patch.status !== undefined && patch.status !== 'pending_review';
-    const remaining = wasPending && isResolved ? review.pending - 1 : review.pending;
     review.update(review.selected.id, patch);
-    if (patch.status) {
-      debug('Decisión de revisión registrada', { documentId, field: review.selected.evidence.field, status: patch.status, pendingFields: remaining });
-      setReviewProgress(`Campo validado. ${remaining > 0 ? `Faltan ${remaining} campos por decidir.` : 'La revisión está lista para aprobar y finalizar.'}`);
-    }
+  };
+  const handleReviewDecision = (status: 'approved' | 'corrected' | 'rejected', value?: string) => {
+    if (!review.selected) return;
+    const currentField = review.selected;
+    const remaining = currentField.status === 'pending_review' ? review.pending - 1 : review.pending;
+    review.decide(currentField.id, status, value ? { value } : undefined);
+    debug('Decisión de revisión registrada', { documentId, field: currentField.evidence.field, status, pendingFields: remaining });
+    setReviewProgress(`Campo validado. ${remaining > 0 ? `Se seleccionó automáticamente el siguiente pendiente (${remaining} restantes).` : 'La revisión está lista para aprobar y finalizar.'}`);
+  };
+  const handleApproveAllPending = () => {
+    if (review.pending === 0) return;
+    debug('Aprobación masiva de revisión', { documentId, approvedFields: review.pending });
+    review.approveAllPending();
+    setReviewProgress('Todos los campos pendientes fueron aprobados por el profesional. La revisión está lista para finalizar.');
+  };
+  const handleOcrSelect = (text: string) => {
+    setSelectedOcrText(text);
+    if (!review.selected) return;
+    handleReviewDecision('corrected', text);
   };
 
   const save = async () => {
@@ -109,7 +121,7 @@ export function OcrReviewPage() {
       if (result.patient && (result.action === 'created' || result.action === 'updated')) {
         const destination = `/doctor/patients/${result.patient.id}`;
         debug('Navegación a expediente', { documentId, patientId: result.patient.id, destination });
-        navigate(destination, { state: { action: result.action } });
+        navigate(destination, { replace: true, state: { action: result.action } });
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'No fue posible aprobar la revisión.';
@@ -148,11 +160,11 @@ export function OcrReviewPage() {
 
       <div className="docdai-review-grid">
         <PageThumbnails pages={pages} selected={page} onSelect={setPage} />
-        <DocumentViewer page={selectedPage} totalPages={pages.length} filename={document.filename} onOcrSelect={setSelectedOcrText} />
+        <DocumentViewer page={selectedPage} totalPages={pages.length} filename={document.filename} onOcrSelect={handleOcrSelect} />
         <ExtractionPanel fields={review.fields} selectedId={review.selectedId} onSelect={review.setSelectedId} />
       </div>
 
-      <EvidencePanel field={review.selected} onUpdate={handleReviewUpdate} />
+      <EvidencePanel field={review.selected} onUpdate={handleReviewUpdate} onDecide={handleReviewDecision} />
 
       {selectedOcrText ? (
         <details className="docdai-ocr-details" open>
@@ -173,6 +185,7 @@ export function OcrReviewPage() {
         busy={submission.kind === 'saving_review' || submission.kind === 'approving' || submission.kind === 'finalizing'}
         approved={document.stage === 'approved'}
         onSave={save}
+        onApproveAll={handleApproveAllPending}
         onApprove={handleApproveAndFinalize}
       />
     </div>

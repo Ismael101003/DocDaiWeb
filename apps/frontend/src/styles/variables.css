@@ -16,6 +16,8 @@
   /* Neutros / superficies */
   --ddw-surface: #ffffff;
   --ddw-surface-muted: #f8fafc;
+  --ddw-surface-raised: rgba(255, 255, 255, 0.94);
+  --ddw-surface-interactive: #f1faf8;
   --ddw-border: #e2e8f0;
   --ddw-text: #0f172a;
   --ddw-text-muted: #51617a;

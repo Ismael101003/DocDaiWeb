@@ -8,6 +8,8 @@
 .dark-theme {
   --ddw-surface: #1e293b;
   --ddw-surface-muted: #0f172a;
+  --ddw-surface-raised: rgba(30, 41, 59, 0.94);
+  --ddw-surface-interactive: rgba(20, 184, 166, 0.12);
   --ddw-border: #334155;
   --ddw-text: #e2e8f0;
   --ddw-text-muted: #94a3b8;
@@ -120,3 +122,9 @@
 .dark-theme .btn-close {
   filter: invert(1) grayscale(100);
 }
+
+.dark-theme .docdai-review-status.is-pending_review { color: #fde68a; background: rgba(180, 83, 9, 0.28); }
+.dark-theme .docdai-review-status.is-approved { color: #99f6e4; background: rgba(13, 148, 136, 0.24); }
+.dark-theme .docdai-review-status.is-corrected,
+.dark-theme .docdai-confidence { color: #bfdbfe; background: rgba(59, 130, 246, 0.24); }
+.dark-theme .docdai-review-status.is-rejected { color: #fecaca; background: rgba(220, 38, 38, 0.25); }

@@ -1,4 +1,4 @@
-export function ReviewActions({ pending, busy, approved, onSave, onApprove }: { pending: number; busy?: boolean; approved?: boolean; onSave: () => void; onApprove: () => void }) {
+export function ReviewActions({ pending, busy, approved, onSave, onApproveAll, onApprove }: { pending: number; busy?: boolean; approved?: boolean; onSave: () => void; onApproveAll: () => void; onApprove: () => void }) {
 	return (
 		<footer className="docdai-review-actions">
 			<span>
@@ -8,6 +8,9 @@ export function ReviewActions({ pending, busy, approved, onSave, onApprove }: { 
 			<div className="d-flex gap-2">
 				<button type="button" className="btn btn-outline-primary" disabled={busy} onClick={onSave}>
 					Guardar cambios
+				</button>
+				<button type="button" className="btn btn-outline-success" disabled={pending === 0 || busy || approved} onClick={onApproveAll}>
+					Aprobar todos los pendientes
 				</button>
 				<button type="button" className="btn btn-primary" disabled={pending > 0 || busy || approved} title={pending > 0 ? `Faltan ${pending} campos por validar` : undefined} aria-describedby={pending > 0 ? 'review-pending-help' : undefined} onClick={onApprove}>
 					{busy ? 'Procesando...' : approved ? '✓ Revisado' : 'Aprobar y finalizar'}

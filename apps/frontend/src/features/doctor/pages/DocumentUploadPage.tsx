@@ -1,24 +1,22 @@
 import { useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { MedicalInformation } from '../processing/MedicalInformation';
-import { OCRResult } from '../processing/OCRResult';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ProcessingLog } from '../processing/ProcessingLog';
 import { ProcessingStepper } from '../processing/ProcessingStepper';
 import { useDocumentProcessing } from '../processing/useDocumentProcessing';
-import { useDocuments } from '@/app/providers/DocumentsProvider';
 
 export function DocumentUploadPage() {
   const { patientId } = useParams();
+  const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const { activeDocument } = useDocuments();
   const { events, processingStep, completedThrough, failedStep, error, perform } = useDocumentProcessing(patientId);
   const isBusy = processingStep !== null;
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!selectedFile || isBusy) return;
-    await perform(selectedFile);
+    const documentId = await perform(selectedFile);
+    if (documentId) navigate(`/doctor/documents/${documentId}/review`, { replace: true });
   };
 
   return <div className="container-fluid">
@@ -40,8 +38,6 @@ export function DocumentUploadPage() {
       </div>
       <div className="col-lg-7"><ProcessingStepper current={processingStep} failed={failedStep} completeThrough={completedThrough} /><ProcessingLog events={events} /></div>
     </div>
-    {patientId ? <div className="alert alert-warning mt-4 mb-0">Este documento conserva el paciente objetivo durante la revisión. El backend actual no acepta <code>patient_id</code> al finalizar, por lo que aplicará sus reglas de matching existentes.</div> : null}
-    {activeDocument?.ocr ? <div className="mt-4"><OCRResult result={activeDocument.ocr} /></div> : null}
-    {activeDocument?.parsed ? <div className="mt-4"><MedicalInformation information={activeDocument.parsed} /><Link className="btn btn-primary mt-3" to={`/doctor/documents/${activeDocument.id}/review`}>Revisar extracción</Link></div> : null}
+    {patientId ? <div className="alert alert-info mt-4 mb-0">Este documento conservará el paciente objetivo durante la revisión y la finalización.</div> : null}
   </div>;
 }

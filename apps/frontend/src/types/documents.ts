@@ -14,7 +14,7 @@ export interface MedicalInformationResponse {
 }
 export interface ClinicalPatient {
   id: string; name: string | null; age: number | null; date_of_birth: string | null;
-  curp: string | null; nss: string | null; created_at: string; updated_at: string;
+  curp: string | null; nss: string | null; created_at: string; updated_at: string; is_active: boolean;
 }
 export interface PatientMedicalRecord {
   patient_id: string; diagnoses: string[]; medications: Medication[]; dates: string[];
@@ -25,8 +25,11 @@ export interface FinalizeDocumentResponse {
   status: 'finalized' | 'ambiguous_match'; match_identifier: string | null;
   patient: ClinicalPatient | null; record: PatientMedicalRecord | null;
 }
-export interface PatientListItem { id: string; full_name: string; }
+export interface PatientListItem { id: string; full_name: string; age: number | null; date_of_birth: string | null; curp: string | null; nss: string | null; }
 export interface PatientListResponse { items: PatientListItem[]; }
+export interface PatientUpdateRequest { name?: string; age?: number | null; date_of_birth?: string | null; curp?: string | null; nss?: string | null; }
+export interface PatientDocument { document_id: string; filename: string; created_at: string | null; }
+export interface PatientDocumentListResponse { items: PatientDocument[]; }
 export interface ProcessingDocument {
   id: string; filename: string; size: number; createdAt: string; stage: DocumentStage;
   pages?: number; preparedImages?: string[]; ocr?: OCRResponse; parsed?: MedicalInformationResponse; previewUrl?: string; targetPatientId?: string; patientId?: string; patientName?: string;
