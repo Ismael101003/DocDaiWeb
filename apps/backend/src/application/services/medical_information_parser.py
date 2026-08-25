@@ -127,7 +127,7 @@ def _clean_value(value: str) -> str:
 
 
 def _get_line_contexts(text: str, *, page_texts: Sequence[str] | None = None) -> list[_LineContext]:
-    normalized_pages = normalize_ocr_pages(page_texts if page_texts is not None else text)
+    normalized_pages = normalize_ocr_pages(page_texts if page_texts else text)
     line_contexts: list[_LineContext] = []
     for page in normalized_pages:
         for raw_line in page.text.splitlines():

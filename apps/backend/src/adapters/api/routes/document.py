@@ -33,6 +33,8 @@ from src.application.use_cases.review_document import (
     ReviewDocumentValidationError,
 )
 from src.application.use_cases.approve_document_review import ApproveDocumentReviewUseCase
+from src.application.use_cases.finalize_document import FinalizeDocumentConflictError, FinalizeDocumentNotFoundError, FinalizeDocumentPatientNotFoundError, FinalizeDocumentUseCase
+from src.application.schemas.finalization import FinalizeDocumentRequest, FinalizeDocumentResponse
 from src.domain.interfaces.document_processor import (
     InvalidDocumentError,
     UnsupportedDocumentError,
@@ -58,10 +60,16 @@ from src.infrastructure.storage.local_temporary_document_storage import (
     LocalTemporaryDocumentStorage,
 )
 from src.infrastructure.storage.in_memory_ocr_result_storage import InMemoryOcrResultStorage
+from src.infrastructure.storage.in_memory_patient_repository import InMemoryPatientRepository
+from src.infrastructure.storage.in_memory_medical_record_repository import InMemoryMedicalRecordRepository
+from src.infrastructure.storage.in_memory_document_finalization_storage import InMemoryDocumentFinalizationStorage
 
 router = APIRouter()
 _ocr_result_storage = InMemoryOcrResultStorage()
 _document_review_storage = InMemoryDocumentReviewStorage()
+_patient_repository = InMemoryPatientRepository()
+_medical_record_repository = InMemoryMedicalRecordRepository()
+_finalization_storage = InMemoryDocumentFinalizationStorage()
 
 
 def get_request_document_upload_use_case() -> RequestDocumentUploadUseCase:
@@ -121,6 +129,10 @@ def get_approve_document_review_use_case() -> ApproveDocumentReviewUseCase:
         parse_use_case=get_parse_medical_information_use_case(),
         review_storage=_document_review_storage,
     )
+
+
+def get_finalize_document_use_case() -> FinalizeDocumentUseCase:
+    return FinalizeDocumentUseCase(document_storage=LocalTemporaryDocumentStorage(), parse_use_case=get_parse_medical_information_use_case(), review_storage=_document_review_storage, patient_repository=_patient_repository, medical_record_repository=_medical_record_repository, finalization_storage=_finalization_storage)
 
 
 @router.post(
@@ -386,3 +398,15 @@ async def approve_document_review(
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     except ReviewDocumentValidationError as exc:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)) from exc
+
+
+@router.post("/{document_id}/finalize", response_model=FinalizeDocumentResponse)
+async def finalize_document(document_id: str, payload: FinalizeDocumentRequest | None = None, use_case: FinalizeDocumentUseCase = Depends(get_finalize_document_use_case)) -> FinalizeDocumentResponse:
+    try:
+        return use_case.execute(document_id=document_id, patient_id=payload.patient_id if payload else None)
+    except FinalizeDocumentNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except FinalizeDocumentPatientNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except FinalizeDocumentConflictError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc

@@ -38,7 +38,7 @@ apps/
 │   │   ├── adapters/api/    Rutas FastAPI y composición de dependencias
 │   │   ├── core/            Logging
 │   │   └── main.py          Aplicación FastAPI
-│   ├── tests/               17 pruebas unitarias actuales
+│   ├── tests/               30 pruebas unitarias actuales
 │   └── requirements.txt
 └── frontend/
     ├── src/

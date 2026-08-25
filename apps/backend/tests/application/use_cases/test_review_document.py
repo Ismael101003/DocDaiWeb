@@ -86,6 +86,8 @@ class ReviewDocumentUseCaseTest(unittest.TestCase):
         self.assertEqual(response.status, "reviewing")
         self.assertEqual(response.summary.total_fields, 1)
         self.assertEqual(response.summary.corrected_fields, 1)
+        self.assertEqual(response.patient_name, "Mariana López Hernandez")
+        self.assertEqual(response.parsed_information.patient.name, "Mariana López Hernandez")
         self.assertEqual(self.review_storage.get(document_id="document-1").status, "reviewing")
 
     def test_rejects_pending_fields_when_approving(self) -> None:

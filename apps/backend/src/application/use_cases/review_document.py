@@ -7,6 +7,12 @@ from src.application.schemas.document_review import (
     DocumentReviewResponse,
     DocumentReviewSummaryResponse,
 )
+from src.application.schemas.medical_information import (
+    ExtractionEvidenceResponse,
+    MedicalInformationResponse,
+    MedicationResponse,
+    PatientInformationResponse,
+)
 from src.application.use_cases.parse_medical_information import (
     OcrResultNotAvailableError,
     ParseMedicalInformationUseCase,
@@ -22,6 +28,112 @@ class ReviewDocumentNotFoundError(Exception):
 
 class ReviewDocumentValidationError(Exception):
     """Indica que la revisión enviada no coincide con la evidencia disponible."""
+
+
+def _apply_corrections_to_parsed_information(
+    parsed: MedicalInformationResponse,
+    fields: list[ReviewedField],
+) -> MedicalInformationResponse:
+    field_map = {f.field: f for f in fields}
+
+    name = parsed.patient.name if parsed.patient else None
+    age = parsed.patient.age if parsed.patient else None
+
+    if "patient.name" in field_map:
+        f = field_map["patient.name"]
+        name = None if f.status == "rejected" else f.value
+
+    if "patient.age" in field_map:
+        f = field_map["patient.age"]
+        age = None if f.status == "rejected" else (int(f.value) if f.value.isdigit() else age)
+
+    patient_response = (
+        PatientInformationResponse(name=name, age=age)
+        if (name is not None or age is not None)
+        else None
+    )
+
+    diagnoses: list[str] = []
+    for index, original in enumerate(parsed.diagnoses):
+        fkey = f"diagnoses[{index}]"
+        if fkey in field_map:
+            f = field_map[fkey]
+            if f.status != "rejected":
+                diagnoses.append(f.value)
+        else:
+            diagnoses.append(original)
+
+    medications: list[MedicationResponse] = []
+    for index, orig_med in enumerate(parsed.medications):
+        name_key = f"medications[{index}].name"
+        if name_key in field_map and field_map[name_key].status == "rejected":
+            continue
+
+        med_name = field_map[name_key].value if name_key in field_map else orig_med.name
+
+        def _get_med_val(prop: str, default: str | None) -> str | None:
+            pkey = f"medications[{index}].{prop}"
+            if pkey in field_map:
+                return None if field_map[pkey].status == "rejected" else field_map[pkey].value
+            return default
+
+        medications.append(
+            MedicationResponse(
+                name=med_name,
+                dose=_get_med_val("dose", orig_med.dose),
+                frequency=_get_med_val("frequency", orig_med.frequency),
+                presentation=_get_med_val("presentation", orig_med.presentation),
+                indication=_get_med_val("indication", orig_med.indication),
+            )
+        )
+
+    dates: list[str] = []
+    for index, original in enumerate(parsed.dates):
+        fkey = f"dates[{index}]"
+        if fkey in field_map:
+            f = field_map[fkey]
+            if f.status != "rejected":
+                dates.append(f.value)
+        else:
+            dates.append(original)
+
+    doctor = parsed.doctor
+    if "doctor" in field_map:
+        f = field_map["doctor"]
+        doctor = None if f.status == "rejected" else f.value
+
+    institution = parsed.institution
+    if "institution" in field_map:
+        f = field_map["institution"]
+        institution = None if f.status == "rejected" else f.value
+
+    updated_evidence: list[ExtractionEvidenceResponse] = []
+    for ev in parsed.evidence:
+        if ev.field in field_map:
+            f = field_map[ev.field]
+            updated_evidence.append(
+                ExtractionEvidenceResponse(
+                    field=ev.field,
+                    value=f.value,
+                    source_text=ev.source_text,
+                    match_type=ev.match_type,
+                    page=ev.page,
+                    confidence=ev.confidence,
+                    status=f.status,
+                )
+            )
+        else:
+            updated_evidence.append(ev)
+
+    return MedicalInformationResponse(
+        patient=patient_response,
+        diagnoses=diagnoses,
+        medications=medications,
+        dates=dates,
+        doctor=doctor,
+        institution=institution,
+        evidence=updated_evidence,
+    )
 
 
 class ReviewDocumentUseCase:
@@ -100,6 +212,10 @@ class ReviewDocumentUseCase:
                 )
             )
 
+        corrected_information = _apply_corrections_to_parsed_information(
+            parsed_information, reviewed_fields
+        )
+
         reviewed_at = datetime.now(timezone.utc)
         review = DocumentReview(
             document_id=document_id,
@@ -107,7 +223,7 @@ class ReviewDocumentUseCase:
             reviewed_at=reviewed_at,
             reviewed_fields=tuple(reviewed_fields),
             reviewed_by=request.reviewed_by,
-            patient_name=parsed_information.patient.name if parsed_information.patient else None,
+            patient_name=corrected_information.patient.name if corrected_information.patient else None,
         )
         self._review_storage.save(review=review)
 
@@ -124,5 +240,5 @@ class ReviewDocumentUseCase:
                 corrected_fields=corrected_fields,
                 rejected_fields=rejected_fields,
             ),
-            parsed_information=parsed_information,
+            parsed_information=corrected_information,
         )
