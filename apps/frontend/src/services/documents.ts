@@ -40,6 +40,7 @@ export const finalizeDocument = (id: string, patientId?: string) => {
     body: JSON.stringify(patientId ? { patient_id: patientId } : {}),
   });
 };
+export const resolveAmbiguousPatient = (id: string, action: 'existing_patient' | 'create_new_patient', patientId?: string) => request<FinalizeDocumentResponse>(`/documents/${encodeURIComponent(id)}/resolve-patient`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, ...(patientId ? { patient_id: patientId } : {}) }) });
 export const getPatient = (id: string) => request<ClinicalPatient>(`/patients/${encodeURIComponent(id)}`);
 export const getPatientMedicalRecord = (id: string) => request<PatientMedicalRecord>(`/patients/${encodeURIComponent(id)}/medical-record`);
 export const listPatients = () => request<PatientListResponse>('/patients/');

@@ -24,7 +24,9 @@ export interface FinalizeDocumentResponse {
   document_id: string; action: 'created' | 'updated' | 'ambiguous_match';
   status: 'finalized' | 'ambiguous_match'; match_identifier: string | null;
   patient: ClinicalPatient | null; record: PatientMedicalRecord | null;
+  candidates: PatientMatchCandidate[];
 }
+export interface PatientMatchCandidate { id: string; name: string | null; age: number | null; date_of_birth: string | null; curp_hint: string | null; nss_hint: string | null; }
 export interface PatientListItem { id: string; full_name: string; age: number | null; date_of_birth: string | null; curp: string | null; nss: string | null; }
 export interface PatientListResponse { items: PatientListItem[]; }
 export interface PatientUpdateRequest { name?: string; age?: number | null; date_of_birth?: string | null; curp?: string | null; nss?: string | null; }

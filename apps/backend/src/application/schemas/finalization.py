@@ -2,7 +2,7 @@ from datetime import date, datetime
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.application.schemas.medical_information import MedicationResponse
 
@@ -17,6 +17,17 @@ class ClinicalPatientResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     is_active: bool = True
+
+
+class PatientMatchCandidateResponse(BaseModel):
+    """Identificadores mínimos para una decisión clínica sin revelar datos completos."""
+
+    id: UUID
+    name: str | None
+    age: int | None
+    date_of_birth: date | None
+    curp_hint: str | None
+    nss_hint: str | None
 
 
 class PatientMedicalRecordResponse(BaseModel):
@@ -37,9 +48,17 @@ class FinalizeDocumentResponse(BaseModel):
     action: Literal["created", "updated", "ambiguous_match"]
     status: Literal["finalized", "ambiguous_match"]
     match_identifier: str | None = None
+    candidates: list[PatientMatchCandidateResponse] = Field(default_factory=list)
 
 
 class FinalizeDocumentRequest(BaseModel):
     """Selección opcional de un expediente ya conocido para finalizar un documento."""
 
+    patient_id: UUID | None = None
+
+
+class ResolveAmbiguousPatientRequest(BaseModel):
+    """Decisión explícita del profesional para una coincidencia no concluyente."""
+
+    action: Literal["existing_patient", "create_new_patient"]
     patient_id: UUID | None = None

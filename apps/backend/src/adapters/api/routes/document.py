@@ -33,8 +33,9 @@ from src.application.use_cases.review_document import (
     ReviewDocumentValidationError,
 )
 from src.application.use_cases.approve_document_review import ApproveDocumentReviewUseCase
-from src.application.use_cases.finalize_document import FinalizeDocumentConflictError, FinalizeDocumentNotFoundError, FinalizeDocumentPatientNotFoundError, FinalizeDocumentUseCase
-from src.application.schemas.finalization import FinalizeDocumentRequest, FinalizeDocumentResponse
+from src.application.use_cases.finalize_document import AmbiguousPatientResolutionError, FinalizeDocumentConflictError, FinalizeDocumentNotFoundError, FinalizeDocumentPatientNotFoundError, FinalizeDocumentUseCase
+from src.application.use_cases.resolve_ambiguous_patient import ResolveAmbiguousPatientUseCase
+from src.application.schemas.finalization import FinalizeDocumentRequest, FinalizeDocumentResponse, ResolveAmbiguousPatientRequest
 from src.domain.interfaces.document_processor import (
     InvalidDocumentError,
     UnsupportedDocumentError,
@@ -133,6 +134,10 @@ def get_approve_document_review_use_case() -> ApproveDocumentReviewUseCase:
 
 def get_finalize_document_use_case() -> FinalizeDocumentUseCase:
     return FinalizeDocumentUseCase(document_storage=LocalTemporaryDocumentStorage(), parse_use_case=get_parse_medical_information_use_case(), review_storage=_document_review_storage, patient_repository=_patient_repository, medical_record_repository=_medical_record_repository, finalization_storage=_finalization_storage)
+
+
+def get_resolve_ambiguous_patient_use_case() -> ResolveAmbiguousPatientUseCase:
+    return ResolveAmbiguousPatientUseCase(finalize_use_case=get_finalize_document_use_case())
 
 
 @router.post(
@@ -409,4 +414,16 @@ async def finalize_document(document_id: str, payload: FinalizeDocumentRequest |
     except FinalizeDocumentPatientNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     except FinalizeDocumentConflictError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+
+
+@router.post("/{document_id}/resolve-patient", response_model=FinalizeDocumentResponse)
+async def resolve_ambiguous_patient(document_id: str, payload: ResolveAmbiguousPatientRequest, use_case: ResolveAmbiguousPatientUseCase = Depends(get_resolve_ambiguous_patient_use_case)) -> FinalizeDocumentResponse:
+    try:
+        return use_case.execute(document_id=document_id, request=payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)) from exc
+    except (FinalizeDocumentNotFoundError, FinalizeDocumentPatientNotFoundError) as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except (FinalizeDocumentConflictError, AmbiguousPatientResolutionError) as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc

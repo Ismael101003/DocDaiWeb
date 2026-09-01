@@ -2,7 +2,15 @@ import type { ReviewField } from '../types/ocrLayout.types';
 
 export type ReviewFieldGroup = { id: string; label: string; fields: ReviewField[]; medications?: Array<{ id: string; label: string; fields: ReviewField[] }> };
 const labels: Record<string, string> = { 'patient.name': 'Nombre', 'patient.age': 'Edad', 'patient.curp': 'CURP', 'patient.nss': 'NSS', 'patient.date_of_birth': 'Fecha de nacimiento', doctor: 'Profesional', institution: 'Institución' };
-const titleFor = (field: string) => labels[field] ?? field.replace(/[_\.]/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+const titleFor = (field: string) => {
+  const medication = field.match(/^medications\[(\d+)]\.(.+)$/);
+  if (medication) return `Medicamento ${Number(medication[1]) + 1} · ${titleFor(medication[2])}`;
+  const diagnosis = field.match(/^diagnoses\[(\d+)]$/);
+  if (diagnosis) return `Diagnóstico ${Number(diagnosis[1]) + 1}`;
+  const date = field.match(/^dates\[(\d+)]$/);
+  if (date) return `Fecha ${Number(date[1]) + 1}`;
+  return labels[field] ?? field.replace(/_/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+};
 
 export function groupReviewFields(fields: ReviewField[]): ReviewFieldGroup[] {
   const patient = fields.filter((field) => field.evidence.field.startsWith('patient.'));

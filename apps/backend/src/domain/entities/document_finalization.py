@@ -15,3 +15,4 @@ class DocumentFinalization:
     match_identifier: str | None
     finalized_at: datetime
     match_source: str = "patient_matching"
+    candidate_patient_ids: tuple[UUID, ...] = ()

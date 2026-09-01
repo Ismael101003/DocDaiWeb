@@ -8,9 +8,10 @@ import { PageThumbnails } from '../components/PageThumbnails';
 import { ExtractionPanel } from '../components/ExtractionPanel';
 import { EvidencePanel } from '../components/EvidencePanel';
 import { ReviewActions } from '../components/ReviewActions';
+import { AmbiguousPatientResolutionModal } from '../components/AmbiguousPatientResolutionModal';
 import { approveReview, saveReview } from '../services/ocrLayoutService';
-import { ApiError, finalizeDocument } from '@/services/documents';
-import type { FinalizeDocumentResponse } from '@/types/documents';
+import { ApiError, finalizeDocument, resolveAmbiguousPatient } from '@/services/documents';
+import type { FinalizeDocumentResponse, PatientMatchCandidate } from '@/types/documents';
 
 type SubmissionState =
   | { kind: 'idle'; message: string }
@@ -18,7 +19,7 @@ type SubmissionState =
   | { kind: 'approving'; message: string }
   | { kind: 'finalizing'; message: string }
   | { kind: 'success'; message: string; patientId?: string }
-  | { kind: 'ambiguous_match'; message: string }
+  | { kind: 'ambiguous_match'; message: string; candidates: PatientMatchCandidate[] }
   | { kind: 'error'; message: string };
 
 export function OcrReviewPage() {
@@ -26,6 +27,7 @@ export function OcrReviewPage() {
   const navigate = useNavigate();
   const { document, updateDocument } = useOcrReview(documentId);
   const [submission, setSubmission] = useState<SubmissionState>({ kind: 'idle', message: '' });
+  const [isResolvingMatch, setIsResolvingMatch] = useState(false);
   const [reviewProgress, setReviewProgress] = useState<string | null>(null);
   const pages = useDocumentPages(document);
   const [page, setPage] = useState(1);
@@ -64,7 +66,7 @@ export function OcrReviewPage() {
 
   const save = async () => {
     if (!documentId) return;
-    setSubmission({ kind: 'saving_review', message: 'Guardando revisión en el backend...' });
+    setSubmission({ kind: 'saving_review', message: 'Guardando revisión clínica...' });
     try {
       const response = await saveReview(documentId, review.fields, reviewedBy);
       setSubmission({ kind: 'success', message: `Revisión guardada. ${response.summary.total_fields} campos sincronizados.` });
@@ -82,7 +84,7 @@ export function OcrReviewPage() {
       const result = await finalizeDocument(documentId, document.targetPatientId);
       debug('Respuesta finalize', { documentId, action: result.action, patientId: result.patient?.id ?? null });
       if (result.action === 'ambiguous_match') {
-        setSubmission({ kind: 'ambiguous_match', message: 'Encontramos varios pacientes posibles. Se requiere confirmación antes de asociar el documento.' });
+        setSubmission({ kind: 'ambiguous_match', message: 'Selecciona el expediente correcto o confirma que se trata de un paciente nuevo.', candidates: result.candidates });
       } else if (result.patient) {
         updateDocument(document.id, { patientId: result.patient.id, patientName: result.patient.name ?? undefined });
         setSubmission({ kind: 'success', message: result.action === 'created' ? 'Nuevo expediente creado.' : 'Expediente actualizado.', patientId: result.patient.id });
@@ -105,10 +107,31 @@ export function OcrReviewPage() {
     }
   };
 
+  const navigateToPatient = (result: FinalizeDocumentResponse) => {
+    if (!result.patient) return;
+    updateDocument(document.id, { patientId: result.patient.id, patientName: result.patient.name ?? undefined });
+    navigate(`/doctor/patients/${result.patient.id}`, { replace: true, state: { action: result.action } });
+  };
+
+  const resolvePatientMatch = async (action: 'existing_patient' | 'create_new_patient', patientId?: string) => {
+    if (!documentId) return;
+    setIsResolvingMatch(true);
+    try {
+      const result = await resolveAmbiguousPatient(documentId, action, patientId);
+      if (!result.patient) throw new Error('No fue posible finalizar el expediente con la decisión seleccionada.');
+      navigateToPatient(result);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'No fue posible resolver la coincidencia clínica.';
+      setSubmission((current) => current.kind === 'ambiguous_match' ? { ...current, message } : current);
+    } finally {
+      setIsResolvingMatch(false);
+    }
+  };
+
   const handleApproveAndFinalize = async () => {
     if (!documentId) return;
     debug('Inicio review/approve', { documentId, patientId: document.targetPatientId ?? null });
-    setSubmission({ kind: 'approving', message: 'Aprobando revisión y persistiendo snapshot...' });
+    setSubmission({ kind: 'approving', message: 'Aprobando y registrando la validación clínica...' });
     try {
       const response = await approveReview(documentId, review.fields, reviewedBy);
       debug('Respuesta review/approve', { documentId, status: response.status, pendingFields: response.summary.pending_fields });
@@ -135,7 +158,7 @@ export function OcrReviewPage() {
         <div>
           <span className="docdai-eyebrow">Revisión humana requerida</span>
           <h1>{document.filename}</h1>
-          <p>OCR original → parser → corrección humana. Ningún dato se aprueba automáticamente.</p>
+          <p>Documento original → extracción → validación humana. Ningún dato se aprueba automáticamente.</p>
         </div>
         <Link className="btn btn-outline-secondary" to="/doctor/documents">
           Volver a documentos
@@ -154,9 +177,10 @@ export function OcrReviewPage() {
           {submission.kind === 'error' && document.stage === 'approved' ? (
             <button type="button" className="btn btn-sm btn-outline-danger ms-3" onClick={() => void finalize()}>Reintentar finalización</button>
           ) : null}
-          {submission.kind === 'ambiguous_match' ? <p className="mb-0 mt-2 small">El backend aún no entrega candidatos ni un endpoint de selección; no se realizará ninguna asociación automática.</p> : null}
         </div>
       ) : null}
+
+      {submission.kind === 'ambiguous_match' ? <AmbiguousPatientResolutionModal candidates={submission.candidates} busy={isResolvingMatch} onLink={(patientId) => void resolvePatientMatch('existing_patient', patientId)} onCreateNew={() => void resolvePatientMatch('create_new_patient')} /> : null}
 
       <div className="docdai-review-grid">
         <PageThumbnails pages={pages} selected={page} onSelect={setPage} />
